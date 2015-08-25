@@ -551,21 +551,6 @@ class GeneralController extends Controller
                  
                 //**************************************************************************************************************
                 //OTHER INCOME
-//              $other_income = ($year =="")?Yii::app()->db->createCommand("
-//                            select IV.item_id, I.name,IV.value,IV.year 
-//                            from tbl_item as I 
-//                            inner join tbl_item_value as IV on I.id = IV.item_id 
-//                            where IV.company_id = '".$company_id."' 
-//                            and I.category = 'CURRENT ASSETS' 
-//                            order by I.id, IV.year ")->queryAll():Yii::app()->db->createCommand("
-//                            select I.name,IV.value,IV.year,I.category 
-//                            from tbl_item as I 
-//                            inner join tbl_item_value as IV on I.id = IV.item_id 
-//                            where IV.company_id = '".$company_id."' 
-//                            and IV.year='".$year."' 
-//                            and I.category = 'CURRENT ASSETS' 
-//                            order by I.id")->queryAll();
-               
                $other_income = ($year =="")?Yii::app()->db->createCommand("
                             select IV.item_id, I.name,IV.value,IV.year 
                             from tbl_item as I 
@@ -637,35 +622,44 @@ class GeneralController extends Controller
                  }
                
                //**************************************************************************************************************
-               
-               //EXPENSES
+               //PROFIT FROM OPERATIONS Restricting string like share of and costs 
                 $expenses = ($year =="")?Yii::app()->db->createCommand("
                                 select IV.item_id, I.name,IV.value,IV.year 
                                 from tbl_item as I 
                                 inner join tbl_item_value as IV on I.id = IV.item_id 
                                 where IV.company_id = '".$company_id."' 
-                                and I.category = 'EXPENSES' 
+                                and I.category = 'EXPENSES'
+                                and I.name not like '%share of%'
+                                and I.name not like '%cost%'
+                                and I.name not like '%tax%'
+                                and I.name not like '%interest%'
                                 order by I.id, IV.year ")->queryAll():Yii::app()->db->createCommand("
                                 select I.name,IV.value,IV.year,I.category 
                                 from tbl_item as I 
                                 inner join tbl_item_value as IV on I.id = IV.item_id 
                                 where IV.company_id = '".$company_id."' 
                                 and IV.year='".$year."' 
-                                and I.category = 'EXPENSES' 
+                                and I.category = 'EXPENSES'
+                                and I.name not like '%share of%'
+                                and I.name not like '%cost%'
+                                and I.name not like '%tax%'
+                                and I.name not like '%interest%'
                                 order by I.id")->queryAll();
                
-                $taxions = Yii::app()->db->createCommand("select IV.item_id, I.name,IV.value,IV.year 
-                                                          from tbl_item as I 
-                                                          inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                          where IV.company_id = '".$company_id."' 
-                                                          and I.name = 'Taxation' 
-                                                          order by IV.year")->queryAll();
-                $taxions_statitis = array();
+//                //for taxations
+//                $taxions = Yii::app()->db->createCommand("select IV.item_id, I.name,IV.value,IV.year 
+//                                                          from tbl_item as I 
+//                                                          inner join tbl_item_value as IV on I.id = IV.item_id 
+//                                                          where IV.company_id = '".$company_id."' 
+//                                                          and I.name = 'Taxation'
+//                                                          and I.category = 'EXPENSES' 
+//                                                          order by IV.year")->queryAll();
+                //$taxions_statitis = array();
                 $expenses_statitis = array();
                 for($j=1;$j<count($year_arr);$j++)
                 {
                     $expenses_statitis[$year_arr[$j]]=0;
-                    $taxions_statitis[$year_arr[$j]]=isset($taxions[$j-1]['value'])?$taxions[$j-1]['value']: 0;
+                    //$taxions_statitis[$year_arr[$j]]=isset($taxions[$j-1]['value'])?$taxions[$j-1]['value']: 0;
                 }
                  if(!empty($expenses))
                  {
@@ -713,46 +707,13 @@ class GeneralController extends Controller
                      
                     $template.="</tr>";
                     }
-
+               
+                    //*******************************************************************************************************
                     $template.="<tr>";
-
                     $template.="<td colspan='".count($year_arr)."'><hr/></td>";
                     $template.="</tr>";
                     $template.="<tr>";
-               
-                    $template.="<td><h5>NET INCOME/PROFIT</h5></td>";
-                    for($j=1;$j<count($year_arr);$j++)
-                    {
-                        $template.= "<td valign='center'><h5>".
-                            number_format($revenue_statitis[$year_arr[$j]] 
-                                          - $cost_of_good_sold_statitis[$year_arr[$j]] 
-                                          + $other_income_statitis[$year_arr[$j]] 
-                                          - $expenses_statitis[$year_arr[$j]]).
-                                    "</h5></td>";
-                    }
-                    $template.="</tr>";
-               
-                    $template.="<td colspan='".count($year_arr)."'><hr/></td>";
-                    $template.="</tr>";
-                    $template.="<tr>";
-               
-                    $template.="<td><h5>PROFIT AFTER TAXATION</h5></td>";
-                    for($j=1;$j<count($year_arr);$j++)
-                    {
-                        $template.= "<td valign='center'><h5>".
-                            number_format($revenue_statitis[$year_arr[$j]] 
-                                          - $cost_of_good_sold_statitis[$year_arr[$j]] 
-                                          + $other_income_statitis[$year_arr[$j]] 
-                                          - $expenses_statitis[$year_arr[$j]] 
-                                          - $taxions_statitis[$year_arr[$j]]).
-                                    "</h5></td>";
-                    }
-               
-                    $template.="<td colspan='".count($year_arr)."'><hr/></td>";
-                    $template.="</tr>";
-                    $template.="<tr>";
-               
-                    $template.="<td><h5>Net (loss)/profit for the financial year</h5></td>";
+                    $template.="<td><h5>(LOSS)/PROFIT FROM OPERATIONS</h5></td>";
                     for($j=1;$j<count($year_arr);$j++)
                     {
                         $template.= "<td valign='center'><h5>".
@@ -761,10 +722,255 @@ class GeneralController extends Controller
                                           + $expenses_statitis[$year_arr[$j]]).
                                     "</h5></td>";
                     }
-               
                     $template.="</tr>";
+                   //*******************************************************************************************************
+               
+                   //*******************************************************************************************************
+                   //PROFIT BEFORE TAXATION only allow for string like share of and costs but not expenses and tax
+                    $expensesBT = ($year =="")?Yii::app()->db->createCommand("
+                                select IV.item_id, I.name,IV.value,IV.year 
+                                from tbl_item as I 
+                                inner join tbl_item_value as IV on I.id = IV.item_id 
+                                where IV.company_id = '".$company_id."' 
+                                and I.category = 'EXPENSES'
+                                and I.name not like '%expense%'
+                                and I.name not like '%interest%'
+                                and I.name not like '%tax%'
+                                order by I.id, IV.year ")->queryAll():Yii::app()->db->createCommand("
+                                select I.name,IV.value,IV.year,I.category 
+                                from tbl_item as I 
+                                inner join tbl_item_value as IV on I.id = IV.item_id 
+                                where IV.company_id = '".$company_id."' 
+                                and IV.year='".$year."' 
+                                and I.category = 'EXPENSES'
+                                and I.name not like '%expense%'
+                                and I.name not like '%interest%'
+                                and I.name not like '%tax%'
+                                order by I.id")->queryAll();
+                    
+                    $expensesBT_statitis = array();
+                    for($j=1;$j<count($year_arr);$j++)
+                    {
+                        $expensesBT_statitis[$year_arr[$j]]=0;
+                    }
+                    
+                    if(!empty($expensesBT))
+                    {
+                   
+                    $template.="<tr>";
+                    $template.="<td colspan='".count($year_arr)."'><h5></h5></td>";
+                    $template.="</tr>";
+                    $template.="</tr>";
+
+                    for($i=0;$i<count($expensesBT);)
+                    {
+                        $template .="<tr>";
+                        $j=1;
+                        $template.="<td>".$expensesBT[$i]['name']."</td>";
+                        while($j<count($year_arr))
+                        {
+                            if(isset($expensesBT[$i]['year'])&&$year_arr[$j]==$expensesBT[$i]['year'])
+                            {
+
+                                $template.="<td valign='center'>".number_format($expensesBT[$i]['value'])."</td>";
+                                $expensesBT_statitis[$year_arr[$j]]+=$expensesBT[$i]['value'];
+                                $i++;
+                            }
+                            else
+                            {
+                                $template.='<td>0</td>';
+                            }
+                            $j++;
+
+                        }
+                        $template.="</tr>";
+                    }
+
+                    $template.="<tr>";
+                    $template.="<td colspan='".count($year_arr)."'><hr/></td>";
+                    $template.="</tr>";
+                    $template.="<tr>";
+                    
+                    $template.="<td><h5>(LOSS)/PROFIT BEFORE TAXATION</h5></td>";
+                    for($j=1;$j<count($year_arr);$j++)
+                    {
+                        $template.= "<td valign='center'><h5>".
+                            number_format($revenue_statitis[$year_arr[$j]]
+                                          + $other_income_statitis[$year_arr[$j]]
+                                          + $expenses_statitis[$year_arr[$j]]
+                                          + $expensesBT_statitis[$year_arr[$j]]).
+                                    "</h5></td>";
+                    }
+                    $template.="</tr>";     
+                    }
+                    //*******************************************************************************************************
+               
+                   //*******************************************************************************************************
+                   //PROFIT AFTER TAXATION only allow for string like TAX but not expenses, share of, cost, interests
+                    $expensesAT = ($year =="")?Yii::app()->db->createCommand("
+                                select IV.item_id, I.name,IV.value,IV.year 
+                                from tbl_item as I 
+                                inner join tbl_item_value as IV on I.id = IV.item_id 
+                                where IV.company_id = '".$company_id."' 
+                                and I.category = 'EXPENSES'
+                                and I.name not like '%expense%'
+                                and I.name not like '%interest%'
+                                and I.name not like '%share of%'
+                                and I.name not like '%cost%'
+                                order by I.id, IV.year ")->queryAll():Yii::app()->db->createCommand("
+                                select I.name,IV.value,IV.year,I.category 
+                                from tbl_item as I 
+                                inner join tbl_item_value as IV on I.id = IV.item_id 
+                                where IV.company_id = '".$company_id."' 
+                                and IV.year='".$year."' 
+                                and I.category = 'EXPENSES'
+                                and I.name not like '%expense%'
+                                and I.name not like '%interest%'
+                                and I.name not like '%share of%'
+                                and I.name not like '%cost%'
+                                order by I.id")->queryAll();
+                    
+                    $expensesAT_statitis = array();
+                    for($j=1;$j<count($year_arr);$j++)
+                    {
+                        $expensesAT_statitis[$year_arr[$j]]=0;
+                    }
+                    
+                    if(!empty($expensesAT))
+                    {
+                   
+                    $template.="<tr>";
+                    $template.="<td colspan='".count($year_arr)."'><h5></h5></td>";
+                    $template.="</tr>";
+                    $template.="</tr>";
+
+                    for($i=0;$i<count($expensesAT);)
+                    {
+                        $template .="<tr>";
+                        $j=1;
+                        $template.="<td>".$expensesAT[$i]['name']."</td>";
+                        while($j<count($year_arr))
+                        {
+                            if(isset($expensesAT[$i]['year'])&&$year_arr[$j]==$expensesAT[$i]['year'])
+                            {
+
+                                $template.="<td valign='center'>".number_format($expensesAT[$i]['value'])."</td>";
+                                $expensesAT_statitis[$year_arr[$j]]+=$expensesAT[$i]['value'];
+                                $i++;
+                            }
+                            else
+                            {
+                                $template.='<td>0</td>';
+                            }
+                            $j++;
+
+                        }
+                        $template.="</tr>";
+                    }
+               
+                    $template.="<tr>";
+                    $template.="<td colspan='".count($year_arr)."'><hr/></td>";
+                    $template.="</tr>";
+                    $template.="<tr>";
+                    $template.="<td><h5>(LOSS)/PROFIT AFTER TAXATION</h5></td>";
+                    for($j=1;$j<count($year_arr);$j++)
+                    {
+                        $template.= "<td valign='center'><h5>".
+                            number_format($revenue_statitis[$year_arr[$j]]
+                                          + $other_income_statitis[$year_arr[$j]]
+                                          + $expenses_statitis[$year_arr[$j]]
+                                          + $expensesBT_statitis[$year_arr[$j]]
+                                          + $expensesAT_statitis[$year_arr[$j]]).
+                                    "</h5></td>";
+                    }
+                    $template.="</tr>";
+                    }
+                   //*******************************************************************************************************
+                    
+                   //*******************************************************************************************************
+                    //PROFIT FOR THE FINANCIAL YEAR only allow for string like interest but not expenses, share of, cost, tax
+                    $expensesFY = ($year =="")?Yii::app()->db->createCommand("
+                                select IV.item_id, I.name,IV.value,IV.year 
+                                from tbl_item as I 
+                                inner join tbl_item_value as IV on I.id = IV.item_id 
+                                where IV.company_id = '".$company_id."' 
+                                and I.category = 'EXPENSES'
+                                and I.name not like '%expense%'
+                                and I.name not like '%tax%'
+                                and I.name not like '%share of%'
+                                and I.name not like '%cost%'
+                                order by I.id, IV.year ")->queryAll():Yii::app()->db->createCommand("
+                                select I.name,IV.value,IV.year,I.category 
+                                from tbl_item as I 
+                                inner join tbl_item_value as IV on I.id = IV.item_id 
+                                where IV.company_id = '".$company_id."' 
+                                and IV.year='".$year."' 
+                                and I.category = 'EXPENSES'
+                                and I.name not like '%expense%'
+                                and I.name not like '%tax%'
+                                and I.name not like '%share of%'
+                                and I.name not like '%cost%'
+                                order by I.id")->queryAll();
+                    
+                    $expensesFY_statitis = array();
+                    for($j=1;$j<count($year_arr);$j++)
+                    {
+                        $expensesFY_statitis[$year_arr[$j]]=0;
+                    }
+                    
+                    if(!empty($expensesFY))
+                    {
+                   
+                    $template.="<tr>";
+                    $template.="<td colspan='".count($year_arr)."'><h5></h5></td>";
+                    $template.="</tr>";
+                    $template.="</tr>";
+
+                    for($i=0;$i<count($expensesFY);)
+                    {
+                        $template .="<tr>";
+                        $j=1;
+                        $template.="<td>".$expensesFY[$i]['name']."</td>";
+                        while($j<count($year_arr))
+                        {
+                            if(isset($expensesFY[$i]['year'])&&$year_arr[$j]==$expensesFY[$i]['year'])
+                            {
+
+                                $template.="<td valign='center'>".number_format($expensesFY[$i]['value'])."</td>";
+                                $expensesFY_statitis[$year_arr[$j]]+=$expensesFY[$i]['value'];
+                                $i++;
+                            }
+                            else
+                            {
+                                $template.='<td>0</td>';
+                            }
+                            $j++;
+
+                        }
+                        $template.="</tr>";
+                    }
+               
+                    $template.="<tr>";
+                    $template.="<td colspan='".count($year_arr)."'><hr/></td>";
+                    $template.="</tr>";
+                    $template.="<tr>";
+                    $template.="<td><h5>NET (LOSS)/PROFIT FOR THE FINANCIAL YEAR</h5></td>";
+                    for($j=1;$j<count($year_arr);$j++)
+                    {
+                        $template.= "<td valign='center'><h5>".
+                            number_format($revenue_statitis[$year_arr[$j]]
+                                          + $other_income_statitis[$year_arr[$j]]
+                                          + $expenses_statitis[$year_arr[$j]]
+                                          + $expensesBT_statitis[$year_arr[$j]]
+                                          + $expensesAT_statitis[$year_arr[$j]]
+                                          + $expensesFY_statitis[$year_arr[$j]]).
+                                    "</h5></td>";
+                    }
+                    $template.="</tr>";
+                    }
+                    //*******************************************************************************************************
 					
-		            $template.="</tr>";
+		            $template.="<tr>";
                     $template.="<td colspan='".count($year_arr)."'><hr/></td>";
                     $template.="</tr>";
                     
@@ -774,7 +980,7 @@ class GeneralController extends Controller
              
                 echo $template;
         }
-        //*******************************************************INCOME STATEMENT*****************************************************
+        //*********************************************************************************************************************
     
 
         public function actionBalanceSheet()
@@ -1023,7 +1229,7 @@ class GeneralController extends Controller
                     $template.="<tr>";
                     $template.="
                                 <td><h5>
-                                    NET CURRENT ASSETS or NET CURRENT LIABILITIES?
+                                    NET CURRENT LIABILITIES
                                 </h5></td>
                                ";
                     for($j=1;$j<count($year_arr);$j++)
@@ -1210,24 +1416,24 @@ class GeneralController extends Controller
                     }
                     //*********************************************************************************************
   
-                    $template.="<tr>";
-                    $template.="<td colspan='".count($year_arr)."'><hr/></td>";
-                    $template.="</tr>";
-                    $template.="<tr>";
-                    $template.="<td>This value refer to?????</td>";
-                    for($j=1;$j<count($year_arr);$j++)
-                    {
-                        $template.= "<td valign='center'><h5>".
-                            number_format($non_current_asset_statitis[$year_arr[$j]] 
-                                          + $current_asset_statitis[$year_arr[$j]] 
-                                          + $current_liabilities_statitis[$year_arr[$j]]).
-                                    "</h5></td>";
-                    }
-                     
-                    $template.="</tr>";
-                    $template.="<tr>";
-                    $template.="<td colspan='".count($year_arr)."'><hr/></td>";
-                    $template.="</tr>";
+//                    $template.="<tr>";
+//                    $template.="<td colspan='".count($year_arr)."'><hr/></td>";
+//                    $template.="</tr>";
+//                    $template.="<tr>";
+//                    $template.="<td>This value refer to?????</td>";
+//                    for($j=1;$j<count($year_arr);$j++)
+//                    {
+//                        $template.= "<td valign='center'><h5>".
+//                            number_format($non_current_asset_statitis[$year_arr[$j]] 
+//                                          + $current_asset_statitis[$year_arr[$j]] 
+//                                          + $current_liabilities_statitis[$year_arr[$j]]).
+//                                    "</h5></td>";
+//                    }
+//                     
+//                    $template.="</tr>";
+//                    $template.="<tr>";
+//                    $template.="<td colspan='".count($year_arr)."'><hr/></td>";
+//                    $template.="</tr>";
                     
                  }
                 
