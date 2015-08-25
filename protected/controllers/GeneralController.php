@@ -53,11 +53,15 @@ class GeneralController extends Controller
 	public function actionView($id)
 	{
             $model =$this->loadModel($id); 
-            $items = Yii::app()->db->createCommand("select I.name,IV.value,I.isMandatory from tbl_item as I inner join tbl_item_value as IV on I.id = IV.item_id where IV.company_id='".$model->company_id."' and IV.year='".$model->year."'")->queryAll();
-            $this->render('view',array(
-                    'model'=>$model,
-                    'items'=>$items
-            ));
+        
+            $items = Yii::app()->db->createCommand("
+                                    select I.name,IV.value,I.isMandatory 
+                                    from tbl_item as I 
+                                    inner join tbl_item_value as IV on I.id = IV.item_id 
+                                    where IV.company_id='".$model->company_id."' 
+                                    and IV.year='".$model->year."'")->queryAll();
+        
+            $this->render('view',array('model'=>$model, 'items'=>$items));
 	}
 
 
@@ -236,7 +240,7 @@ class GeneralController extends Controller
 
                                 $template.="<td valign='center'>".number_format($cash_flow_from_operating_investing[$i]['value'])."</td>";
                                 
-                                $cash_flow_from_operating_investing_statitis[$year_arr[$j]]+=$cash_flow_from_operating_investing[$i]['value'];
+                            $cash_flow_from_operating_investing_statitis[$year_arr[$j]]+=$cash_flow_from_operating_investing[$i]['value'];
                                 
                                 $i++;
                             }
@@ -444,11 +448,13 @@ class GeneralController extends Controller
                     $template.="<td colspan='".count($year_arr)."'><hr/></td>";
                     $template.="</tr>";
                     $template.="<tr>";
+                    
                     $template.="<td><h5><i>(TOTAL REVENUE)</i></h5></td>";
                     for($j=1;$j<count($year_arr);$j++)
                     {
                         $template.="<td valign='center'><h5>".number_format($revenue_statitis[$year_arr[$j]])."</h5></td>";
                     }
+                    
                     $template.="</tr>";  
                     $template.="<tr>";
                     $template.="<td colspan='".count($year_arr)."'><hr/></td>";
@@ -543,21 +549,36 @@ class GeneralController extends Controller
                     $template.="</tr>";
                  }
                  
+                //**************************************************************************************************************
+                //OTHER INCOME
+//              $other_income = ($year =="")?Yii::app()->db->createCommand("
+//                            select IV.item_id, I.name,IV.value,IV.year 
+//                            from tbl_item as I 
+//                            inner join tbl_item_value as IV on I.id = IV.item_id 
+//                            where IV.company_id = '".$company_id."' 
+//                            and I.category = 'CURRENT ASSETS' 
+//                            order by I.id, IV.year ")->queryAll():Yii::app()->db->createCommand("
+//                            select I.name,IV.value,IV.year,I.category 
+//                            from tbl_item as I 
+//                            inner join tbl_item_value as IV on I.id = IV.item_id 
+//                            where IV.company_id = '".$company_id."' 
+//                            and IV.year='".$year."' 
+//                            and I.category = 'CURRENT ASSETS' 
+//                            order by I.id")->queryAll();
                
-                 //OTHER INCOME
-                $other_income = ($year =="")?Yii::app()->db->createCommand("
+               $other_income = ($year =="")?Yii::app()->db->createCommand("
                             select IV.item_id, I.name,IV.value,IV.year 
                             from tbl_item as I 
                             inner join tbl_item_value as IV on I.id = IV.item_id 
                             where IV.company_id = '".$company_id."' 
-                            and I.category = 'CURRENT ASSETS' 
+                            and I.category = 'OTHER INCOME' 
                             order by I.id, IV.year ")->queryAll():Yii::app()->db->createCommand("
                             select I.name,IV.value,IV.year,I.category 
                             from tbl_item as I 
                             inner join tbl_item_value as IV on I.id = IV.item_id 
                             where IV.company_id = '".$company_id."' 
                             and IV.year='".$year."' 
-                            and I.category = 'CURRENT ASSETS' 
+                            and I.category = 'OTHER INCOME' 
                             order by I.id")->queryAll();
 
                  if(!empty($other_income))
@@ -601,11 +622,13 @@ class GeneralController extends Controller
                     $template.="<td colspan='".count($year_arr)."'><hr/></td>";
                     $template.="</tr>";
                     $template.="<tr>";
+                     
                     $template.="<td><h5><i>(TOTAL OTHER INCOME)</i></h5></td>";
                     for($j=1;$j<count($year_arr);$j++)
                     {
                         $template.="<td valign='center'><h5>".number_format($other_income_statitis[$year_arr[$j]])."</h5></td>";
                     }
+                     
                     $template.="</tr>";
                     $template.="<tr>";
                     $template.="<td colspan='".count($year_arr)."'><hr/></td>";
@@ -613,7 +636,9 @@ class GeneralController extends Controller
                    
                  }
                
-                 //EXPENSES
+               //**************************************************************************************************************
+               
+               //EXPENSES
                 $expenses = ($year =="")?Yii::app()->db->createCommand("
                                 select IV.item_id, I.name,IV.value,IV.year 
                                 from tbl_item as I 
@@ -685,6 +710,7 @@ class GeneralController extends Controller
                     {
                         $template.="<td valign='center'><h5>".number_format($expenses_statitis[$year_arr[$j]])."</h5></td>";
                     }
+                     
                     $template.="</tr>";
                     }
 
@@ -705,7 +731,8 @@ class GeneralController extends Controller
                                     "</h5></td>";
                     }
                     $template.="</tr>";
-                     $template.="<td colspan='".count($year_arr)."'><hr/></td>";
+               
+                    $template.="<td colspan='".count($year_arr)."'><hr/></td>";
                     $template.="</tr>";
                     $template.="<tr>";
                
@@ -718,6 +745,20 @@ class GeneralController extends Controller
                                           + $other_income_statitis[$year_arr[$j]] 
                                           - $expenses_statitis[$year_arr[$j]] 
                                           - $taxions_statitis[$year_arr[$j]]).
+                                    "</h5></td>";
+                    }
+               
+                    $template.="<td colspan='".count($year_arr)."'><hr/></td>";
+                    $template.="</tr>";
+                    $template.="<tr>";
+               
+                    $template.="<td><h5>Net (loss)/profit for the financial year</h5></td>";
+                    for($j=1;$j<count($year_arr);$j++)
+                    {
+                        $template.= "<td valign='center'><h5>".
+                            number_format($revenue_statitis[$year_arr[$j]]
+                                          + $other_income_statitis[$year_arr[$j]]
+                                          + $expenses_statitis[$year_arr[$j]]).
                                     "</h5></td>";
                     }
                

@@ -15,7 +15,7 @@ class RatioController extends Controller
                $company_id = $_REQUEST['ratios_company_id'];
                $company_name = $_REQUEST['ratios_company_name'];
                
-//******************************************************************************************************************************************
+//**************************************************************************************************************************************
                
                $years = Yii::app()->db->createCommand("select `year` 
                                                        from tbl_item_value 
@@ -159,7 +159,7 @@ class RatioController extends Controller
                                                                                   group by IV.year 
                                                                                   order by IV.year")->queryAll();
                
-//*****************************************************************************************************************************************
+//**************************************************************************************************************************************
                
                 $template.="<h4><span style='padding-left: 170px;'>RATIO</span></h4>";
                 $template.="<h4><span style='padding-left: 150px;'>COMPANY NAME: ".$company_name." COMPANY ID: ".$company_id."</span></h4>";

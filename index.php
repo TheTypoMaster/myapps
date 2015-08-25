@@ -1,8 +1,8 @@
 <?php
 
-    defined('YII_DEBUG') or define('YII_DEBUG', true);
-    error_reporting(-1);
-    ini_set('display_errors', true);
+defined('YII_DEBUG') or define('YII_DEBUG', true);
+error_reporting(-1);
+ini_set('display_errors', true);
 
 // change the following paths if necessary
 $yii=dirname(__FILE__).'/../../yii/framework/yii.php';
