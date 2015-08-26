@@ -82,12 +82,12 @@ class RatioController extends Controller
                                                                     where IV.company_id = '".$company_id."' 
                                                                     and I.category = 'EXPENSES'
                                                                     and I.name not like '%share of%'
-                                                                    and I.name not like '%cost%'
+                                                                    and I.name not like '%finance%' 
                                                                     and I.name not like '%tax%'
                                                                     and I.name not like '%interest%'
                                                                     order by I.id, IV.year ")->queryAll();
                
-    //then, lets get the EXPENSES value of PROFIT BEFORE TAXATION with string 'share of' and 'cost' only
+    //then, lets get the EXPENSES value of PROFIT BEFORE TAXATION with string 'share of' and 'finance' only
                $profit_before_taxation_expenses = Yii::app()->db->createCommand("
                                                                     select sum(IV.value) as sum, IV.year
                                                                     from tbl_item as I 
@@ -97,6 +97,19 @@ class RatioController extends Controller
                                                                     and I.name not like '%expense%'
                                                                     and I.name not like '%interest%'
                                                                     and I.name not like '%tax%'
+                                                                    order by I.id, IV.year ")->queryAll();
+               
+    //after that, proceed to the EXPENSES value of PROFIT AFTER TAXATION with string 'tax' only
+               $profit_after_taxation_expenses = Yii::app()->db->createCommand("
+                                                                    select sum(IV.value) as sum, IV.year
+                                                                    from tbl_item as I 
+                                                                    inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                                    where IV.company_id = '".$company_id."' 
+                                                                    and I.category = 'EXPENSES'
+                                                                    and I.name not like '%expense%'
+                                                                    and I.name not like '%interest%'
+                                                                    and I.name not like '%share of%'
+                                                                    and I.name not like '%finance%' 
                                                                     order by I.id, IV.year ")->queryAll();
                
     //************************************************************************************************************************************
@@ -131,7 +144,7 @@ class RatioController extends Controller
                                                              inner join tbl_item_value as IV on I.id = IV.item_id 
                                                              where IV.company_id = '".$company_id."'
                                                              and I.category = 'EXPENSES' 
-                                                             and I.name like '%cost%' 
+                                                             and I.name like '%finance%' 
                                                              group by IV.year 
                                                              order by IV.year")->queryAll();
                
@@ -327,12 +340,12 @@ class RatioController extends Controller
                     }
 
                 }
-               
                 $template .="</tr>";
                 
+               
+               //****************************************************************************************************************
                 $template .="<tr>";
                 $template .="<td colspan='".(count($years)+2)."'> <h5>INCOME<br/>STATEMENT<br/>RATIOS</h5></td>";
-              
                 $template .="</tr>";
                 $template .="<tr>";
                 $template .="<td><label>COVERAGE RATIO</label></td>";
@@ -345,8 +358,7 @@ class RatioController extends Controller
                     $revenue_cogs = $revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'];
                     //**************************************************************************************
                     
-                    if(isset($revenue_cogs) && isset($total_other_income[$j]['sum']) &&
-                       isset($profit_from_operation_expenses[$j]['sum']))
+                    if(isset($revenue_cogs) && isset($total_other_income[$j]['sum']) && isset($profit_from_operation_expenses[$j]['sum']))
                     {
                         $cost_of_good_sold[$j]['sum'];
                         
@@ -355,7 +367,7 @@ class RatioController extends Controller
                                            + $total_other_income[$j]['sum'] 
                                            + $profit_from_operation_expenses[$j]['sum'] 
                                            + $profit_before_taxation_expenses[$j]['sum'])
-                                           / $finance_cost[$j]['sum'], 3, '.', ',').
+                                           / $finance_cost[$j]['sum'], 2, '.', ',').
                                     "</label></td>";
                     }
                     else
@@ -373,15 +385,17 @@ class RatioController extends Controller
                
                 for($j=0;$j<count($years);$j++)
                 {
-                    if(isset($revenue[$j]['value']) && isset($total_other_income[$j]['sum']) && 
-                       isset($total_expense[$j]['sum']) && isset($revenue[$j]['value']) && 
-                       isset($total_other_income[$j]['sum']) && ($revenue[$j]['value'] + $total_other_income[$j]['sum']) !=0 )
+                    $revenue_cogs = $revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'];
+                    
+                    if(isset($revenue_cogs) && isset($total_other_income[$j]['sum']) && isset($profit_from_operation_expenses[$j]['sum']))
                     {
                         
                     $template.= "<td><label>".
-                        number_format(($revenue[$j]['value'] + $total_other_income[$j]['sum'] 
-                                       + $total_expense[$j]['sum']) / ($revenue[$j]['value'] 
-                                       + $total_other_income[$j]['sum']), 3, '.', ',').
+                        number_format(($revenue_cogs
+                                      + $total_other_income[$j]['sum'] 
+                                      + $profit_from_operation_expenses[$j]['sum'])
+                                      / ($revenue[$j]['value']
+                                      + $total_other_income[$j]['sum']), 2, '.', ',').
                                 "</label></td>";
                     }
                     else
@@ -398,18 +412,18 @@ class RatioController extends Controller
                
                 for($j=0;$j<count($years);$j++)
                 {
-                    if(isset($revenue[$j]['value']) && isset($total_other_income[$j]['sum']) && 
-                       isset($total_expense[$j]['sum']) && isset($finance_cost[$j]['value']) && 
-                       isset($share_of_profit_in_asociated_company[$j]['value']) && 
-                       isset($taxation[$j]['value']) && isset($revenue[$j]['value']) && isset($total_other_income[$j]['sum']) 
-                       && ($revenue[$j]['value'] + $total_other_income[$j]['sum']) !=0 )
+                    $revenue_cogs = $revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'];
+                    
+                    if(isset($revenue_cogs) && isset($total_other_income[$j]['sum']) && isset($profit_from_operation_expenses[$j]['sum']))
                     {
                         $template.= "<td><label>".
-                            number_format(($revenue[$j]['value'] + $total_other_income[$j]['sum'] 
-                                           + $total_expense[$j]['sum'] 
-                                           + $finance_cost[$j]['value'] + $share_of_profit_in_asociated_company[$j]['value'] 
-                                           + $taxation[$j]['value']) / ($revenue[$j]['value'] 
-                                           + $total_other_income[$j]['sum']), 3, '.', ',').
+                            number_format(($revenue_cogs
+                                           + $total_other_income[$j]['sum'] 
+                                           + $profit_from_operation_expenses[$j]['sum'] 
+                                           + $profit_before_taxation_expenses[$j]['sum']
+                                           + $profit_after_taxation_expenses[$j]['sum'])
+                                           / ($revenue[$j]['value']
+                                           + $total_other_income[$j]['sum']), 2, '.', ',').
                                    "</label></td>";
                     }
                     else{
@@ -426,15 +440,16 @@ class RatioController extends Controller
                
                 for($j=0;$j<count($years);$j++)
                 {
-                    if(isset($revenue[$j]['value']) && isset($total_other_income[$j]['sum']) && 
-                       isset($total_expense[$j]['sum']) && isset($revenue[$j]['value']) && 
-                       $revenue[$j]['value'] !=0 )
+                    $revenue_cogs = $revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'];
+                    
+                    if(isset($revenue_cogs) && isset($total_other_income[$j]['sum']) && isset($profit_from_operation_expenses[$j]['sum']))
                     {
                         
                         $template.= "<td><label>".
-                            number_format(($revenue[$j]['value'] + $total_other_income[$j]['sum'] 
-                                           + $total_expense[$j]['sum']) 
-                                           / $revenue[$j]['value'], 3, '.', ',').
+                            number_format(($revenue_cogs
+                                           + $total_other_income[$j]['sum'] 
+                                           + $profit_from_operation_expenses[$j]['sum'])
+                                           / $revenue[$j]['value'], 2, '.', ',').
                                     "</label></td>";
                     }
                     else
@@ -451,16 +466,18 @@ class RatioController extends Controller
                
                 for($j=0;$j<count($years);$j++)
                 {
-                    if(isset($revenue[$j]['value']) && isset($total_other_income[$j]['sum']) && 
-                       isset($total_expense[$j]['sum']) && isset($finance_cost[$j]['value']) && 
-                       isset($share_of_profit_in_asociated_company[$j]['value']) && isset($finance_cost[$j]['value']) && 
-                       isset($revenue[$j]['value'])&& $revenue[$j]['value'] !=0 )
+                    $revenue_cogs = $revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'];
+                    
+                    if(isset($revenue_cogs) && isset($total_other_income[$j]['sum']) && isset($profit_from_operation_expenses[$j]['sum']))
                     {
                         
                         $template.= "<td><label>".
-                            number_format(($revenue[$j]['value'] + $total_other_income[$j]['sum'] + $total_expense[$j]['sum'] 
-                                           + $finance_cost[$j]['value'] + $share_of_profit_in_asociated_company[$j]['value'] 
-                                           + $finance_cost[$j]['value'] / $revenue[$j]['value']), 3, '.', ',').
+                            number_format(($revenue_cogs
+                                           + $total_other_income[$j]['sum'] 
+                                           + $profit_from_operation_expenses[$j]['sum'] 
+                                           + $profit_before_taxation_expenses[$j]['sum']
+                                           + $finance_cost[$j]['sum'])
+                                           / $revenue[$j]['value'], 2, '.', ',').
                                     "</label></td>";
                         
                     }
