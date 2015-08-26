@@ -54,16 +54,55 @@ class RatioController extends Controller
                                                                                and I.category = 'NON-CURRENT LIABILITIES' 
                                                                                group by IV.year 
                                                                                order by IV.year")->queryAll();
+    //****************************************************************************************************************************
+    //dont forget the COGS value          
+               $cost_of_good_sold = Yii::app()->db->createCommand("
+                                                                    select sum(IV.value) as sum, IV.year 
+                                                                    from tbl_item as I 
+                                                                    inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                                    where IV.company_id = '".$company_id."' 
+                                                                    and I.category = 'COST OF GOOD SOLD' 
+                                                                    order by I.id, IV.year
+                                                                    ")->queryAll();
                
-                //i'm getting shareholders fund or shareholders equity as sum here.
-                $share_hoder_equity =Yii::app()->db->createCommand("select sum(IV.value) as sum 
+    //i'm getting shareholders fund or shareholders equity as sum here.
+                $share_hoder_equity = Yii::app()->db->createCommand("
+                                                                    select sum(IV.value) as sum, IV.year 
                                                                     from tbl_item as I 
                                                                     inner join tbl_item_value as IV on I.id = IV.item_id 
                                                                     where IV.company_id = '".$company_id."' 
                                                                     and I.category = 'FINANCED BY / EQUITY' 
-                                                                    order by I.id, IV.year")->queryAll();
+                                                                    order by I.id, IV.year ")->queryAll();
                
-               $revenue =Yii::app()->db->createCommand("select IV.value ,IV.year 
+    //now lets get the EXPENSES value of PROFIT FROM OPERATION with string 'expenses' only
+               $profit_from_operation_expenses = Yii::app()->db->createCommand("
+                                                                    select sum(IV.value) as sum, IV.year
+                                                                    from tbl_item as I 
+                                                                    inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                                    where IV.company_id = '".$company_id."' 
+                                                                    and I.category = 'EXPENSES'
+                                                                    and I.name not like '%share of%'
+                                                                    and I.name not like '%cost%'
+                                                                    and I.name not like '%tax%'
+                                                                    and I.name not like '%interest%'
+                                                                    order by I.id, IV.year ")->queryAll();
+               
+    //then, lets get the EXPENSES value of PROFIT BEFORE TAXATION with string 'share of' and 'cost' only
+               $profit_before_taxation_expenses = Yii::app()->db->createCommand("
+                                                                    select sum(IV.value) as sum, IV.year
+                                                                    from tbl_item as I 
+                                                                    inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                                    where IV.company_id = '".$company_id."' 
+                                                                    and I.category = 'EXPENSES'
+                                                                    and I.name not like '%expense%'
+                                                                    and I.name not like '%interest%'
+                                                                    and I.name not like '%tax%'
+                                                                    order by I.id, IV.year ")->queryAll();
+               
+    //************************************************************************************************************************************
+               
+               
+               $revenue =Yii::app()->db->createCommand("select IV.value, IV.year 
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
                                                         where IV.company_id = '".$company_id."' 
@@ -71,7 +110,7 @@ class RatioController extends Controller
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
                
-               $total_other_income =Yii::app()->db->createCommand("select sum(IV.value) as sum,IV.year 
+               $total_other_income =Yii::app()->db->createCommand("select sum(IV.value) as sum, IV.year 
                                                                    from tbl_item as I 
                                                                    inner join tbl_item_value as IV on I.id = IV.item_id 
                                                                    where IV.company_id = '".$company_id."' 
@@ -79,7 +118,7 @@ class RatioController extends Controller
                                                                    group by IV.year 
                                                                    order by IV.year")->queryAll();
                
-               $total_expense =Yii::app()->db->createCommand("select sum(IV.value) as sum,IV.year 
+               $total_expense =Yii::app()->db->createCommand("select sum(IV.value) as sum, IV.year 
                                                               from tbl_item as I 
                                                               inner join tbl_item_value as IV on I.id = IV.item_id 
                                                               where IV.company_id = '".$company_id."' 
@@ -87,15 +126,16 @@ class RatioController extends Controller
                                                               group by IV.year 
                                                               order by IV.year")->queryAll();
                
-               $finance_cost =Yii::app()->db->createCommand("select IV.value,IV.year 
+               $finance_cost =Yii::app()->db->createCommand("select sum(IV.value) as sum, IV.year 
                                                              from tbl_item as I 
                                                              inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                             where IV.company_id = '".$company_id."' 
-                                                             and I.name = 'Finance Costs' 
+                                                             where IV.company_id = '".$company_id."'
+                                                             and I.category = 'EXPENSES' 
+                                                             and I.name like '%cost%' 
                                                              group by IV.year 
                                                              order by IV.year")->queryAll();
                
-    $share_of_profit_in_asociated_company =Yii::app()->db->createCommand("select IV.value,IV.year 
+    $share_of_profit_in_asociated_company =Yii::app()->db->createCommand("select IV.value, IV.year 
                                                                           from tbl_item as I 
                                                                           inner join tbl_item_value as IV on I.id = IV.item_id 
                                                                           where IV.company_id = '".$company_id."' 
@@ -103,7 +143,7 @@ class RatioController extends Controller
                                                                           group by IV.year 
                                                                           order by IV.year")->queryAll();
                
-               $taxation =Yii::app()->db->createCommand("select IV.value,IV.year 
+               $taxation =Yii::app()->db->createCommand("select IV.value, IV.year 
                                                          from tbl_item as I 
                                                          inner join tbl_item_value as IV on I.id = IV.item_id 
                                                          where IV.company_id = '".$company_id."' 
@@ -111,7 +151,7 @@ class RatioController extends Controller
                                                          group by IV.year 
                                                          order by IV.year")->queryAll();
                
-               $share_capital = Yii::app()->db->createCommand("select IV.value,IV.year 
+               $share_capital = Yii::app()->db->createCommand("select IV.value, IV.year 
                                                                from tbl_item as I 
                                                                inner join tbl_item_value as IV on I.id = IV.item_id 
                                                                where IV.company_id = '".$company_id."' 
@@ -119,7 +159,7 @@ class RatioController extends Controller
                                                                group by IV.year 
                                                                order by IV.year")->queryAll(); 
                
-               $share_premum = Yii::app()->db->createCommand("select IV.value,IV.year 
+               $share_premum = Yii::app()->db->createCommand("select IV.value, IV.year 
                                                               from tbl_item as I 
                                                               inner join tbl_item_value as IV on I.id = IV.item_id 
                                                               where IV.company_id = '".$company_id."' 
@@ -127,7 +167,7 @@ class RatioController extends Controller
                                                               group by IV.year 
                                                               order by IV.year")->queryAll();
                
-               $preference_shares = Yii::app()->db->createCommand("select IV.value,IV.year 
+               $preference_shares = Yii::app()->db->createCommand("select IV.value, IV.year 
                                                                    from tbl_item as I 
                                                                    inner join tbl_item_value as IV on I.id = IV.item_id 
                                                                    where IV.company_id = '".$company_id."' 
@@ -135,7 +175,7 @@ class RatioController extends Controller
                                                                    group by IV.year 
                                                                    order by IV.year")->queryAll();
                
-               $foreign_exchanged_reserve = Yii::app()->db->createCommand("select IV.value,IV.year 
+               $foreign_exchanged_reserve = Yii::app()->db->createCommand("select IV.value, IV.year 
                                                                            from tbl_item as I 
                                                                            inner join tbl_item_value as IV on I.id = IV.item_id 
                                                                            where IV.company_id = '".$company_id."' 
@@ -143,7 +183,7 @@ class RatioController extends Controller
                                                                            group by IV.year 
                                                                            order by IV.year")->queryAll();
                
-               $accumulated_loss_retained_profit = Yii::app()->db->createCommand("select IV.value,IV.year 
+               $accumulated_loss_retained_profit = Yii::app()->db->createCommand("select IV.value, IV.year 
                                                                                   from tbl_item as I 
                                                                                   inner join tbl_item_value as IV on I.id = IV.item_id 
                                                                                   where IV.company_id = '".$company_id."' 
@@ -297,19 +337,25 @@ class RatioController extends Controller
                 $template .="<tr>";
                 $template .="<td><label>COVERAGE RATIO</label></td>";
                 $template .="<td><label>INTEREST<br/>COVERAGE</label></td>";
+               
+                 
                 for($j=0;$j<count($years);$j++)
                 {
-                    if(isset($revenue[$j]['value']) && isset($total_other_income[$j]['sum']) && isset($total_expense[$j]['sum'])&&
-                       isset($finance_cost[$j]['value'])&& isset($share_of_profit_in_asociated_company[$j]['value'])&& 
-                       isset($revenue[$j]['value'])&& 
-                       isset($total_other_income[$j]['sum']) && ($revenue[$j]['value']+$total_other_income[$j]['sum']) !=0)
+                    //since the function cannot get null value, then, we subtract the REVENUE and COGS first!
+                    $revenue_cogs = $revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'];
+                    //**************************************************************************************
+                    
+                    if(isset($revenue_cogs) && isset($total_other_income[$j]['sum']) &&
+                       isset($profit_from_operation_expenses[$j]['sum']))
                     {
+                        $cost_of_good_sold[$j]['sum'];
                         
                         $template.= "<td><label>".
-                            number_format(($revenue[$j]['value'] + $total_other_income[$j]['sum'] 
-                                           + $total_expense[$j]['sum'] + $finance_cost[$j]['value'] 
-                                           + $share_of_profit_in_asociated_company[$j]['value']) 
-                                           / ($revenue[$j]['value'] + $total_other_income[$j]['sum']), 3, '.', ',').
+                            number_format(($revenue_cogs
+                                           + $total_other_income[$j]['sum'] 
+                                           + $profit_from_operation_expenses[$j]['sum'] 
+                                           + $profit_before_taxation_expenses[$j]['sum'])
+                                           / $finance_cost[$j]['sum'], 3, '.', ',').
                                     "</label></td>";
                     }
                     else
