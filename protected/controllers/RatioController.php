@@ -55,6 +55,16 @@ class RatioController extends Controller
                                                                                group by IV.year 
                                                                                order by IV.year")->queryAll();
     //****************************************************************************************************************************
+    //current assets withot inventories and prepayments
+    $ca_without_inventory_prepayment = Yii::app()->db->createCommand("select sum(IV.value) as sum, IV.year 
+                                                                      from tbl_item as I 
+                                                                      inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                                      where IV.company_id = '".$company_id."' 
+                                                                      and I.category = 'CURRENT ASSETS'
+                                                                      and I.name not like '%inventor%'
+                                                                      and I.name not like '%prepayment%'
+                                                                      group by IV.year 
+                                                                      order by IV.year")->queryAll();
     //dont forget the COGS value          
                $cost_of_good_sold = Yii::app()->db->createCommand("
                                                                     select sum(IV.value) as sum, IV.year 
@@ -65,7 +75,18 @@ class RatioController extends Controller
                                                                     order by I.id, IV.year
                                                                     ")->queryAll();
                
-    //i'm getting shareholders fund or shareholders equity as sum here.
+    //i'm getting shareholders fund as sum here.
+                $share_hoder_fund = Yii::app()->db->createCommand("
+                                                                    select sum(IV.value) as sum, IV.year 
+                                                                    from tbl_item as I 
+                                                                    inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                                    where IV.company_id = '".$company_id."' 
+                                                                    and I.category = 'FINANCED BY / EQUITY'
+                                                                    and I.name not like '%minority interest%'
+                                                                    and I.name not like '%Preference Shares for Shareholders Equity%'
+                                                                    order by I.id, IV.year ")->queryAll();
+               
+    //i'm getting shareholders equity as sum here.
                 $share_hoder_equity = Yii::app()->db->createCommand("
                                                                     select sum(IV.value) as sum, IV.year 
                                                                     from tbl_item as I 
@@ -254,12 +275,12 @@ class RatioController extends Controller
                 {
                     
                    
-                     if(isset ($total_current_assets[$j]['sum']) && 
-                        isset($total_current_liabilities[$j]['sum']) && $total_current_liabilities[$j]['sum']!=0)
+                     if(isset ($ca_without_inventory_prepayment[$j]['sum']) && 
+                        isset($total_current_liabilities[$j]['sum']) && $total_current_liabilities[$j]['sum'])
                      {
                          
                         $template.= "<td><label>".
-                        number_format(($total_current_assets[$j]['sum'] / $total_current_liabilities[$j]['sum']), 3, '.', ',').
+                        number_format(($ca_without_inventory_prepayment[$j]['sum'] / $total_current_liabilities[$j]['sum']), 3, '.', ',').
                                     "</label></td>";
                      }
                     else
@@ -280,12 +301,12 @@ class RatioController extends Controller
                 {
                    
                    if(isset($total_current_liabilities[$j]['sum']) && isset($total_non_current_liabilities[$j]['sum']) &&
-                      isset($share_hoder_equity[$j]['sum'])){
+                      isset($share_hoder_fund[$j]['sum'])){
                        
                         $template.= "<td><label>".
                         number_format(($total_current_liabilities[$j]['sum'] 
                                        + $total_non_current_liabilities[$j]['sum']) 
-                                       / $share_hoder_equity[$j]['sum'], 3, '.', ',').
+                                       / $share_hoder_fund[$j]['sum'], 3, '.', ',').
                                     "</label></td>";
                    }
                    else
@@ -489,29 +510,25 @@ class RatioController extends Controller
                
                 $template .="</tr>";
                 
-                
+                //******************************************************************************************************************
                 $template .="<tr>";
                 $template .="<td><label>RETURN ON<br/>INVESTMENT(ROI)</label></td>";
                
                 $template .="<td><label>RETURN ON EQUITY<br/>(ROE)</label></td>";
                 for($j=0;$j<count($years);$j++)
                 {
-                    if(isset($revenue[$j]['value']) && isset($total_other_income[$j]['sum']) && 
-                       isset($total_expense[$j]['sum']) && isset($finance_cost[$j]['value']) && 
-                       isset($share_of_profit_in_asociated_company[$j]['value']) && isset($taxation[$j]['value']) && 
-                       isset($share_capital[$j]['value']) && $share_capital[$j]['value'] && 
-                       isset($preference_shares[$j]['value']) && isset($foreign_exchanged_reserve[$j]['value']) &&
-                       isset($accumulated_loss_retained_profit[$j]['value']) !=0 )
+                    $revenue_cogs = $revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'];
+                    
+                    if(isset($revenue_cogs) && isset($share_hoder_fund[$j]['sum']))
                     {
                         
                         $template.= "<td><label>".
-                            number_format(($revenue[$j]['value'] + $total_other_income[$j]['sum'] + $total_expense[$j]['sum'] 
-                                           + $finance_cost[$j]['value'] + $share_of_profit_in_asociated_company[$j]['value'] 
-                                           + $taxation[$j]['value'] 
-                                           / $share_capital[$j]['value'] 
-                                           + $share_premum[$j]['value'] + $preference_shares[$j]['value'] 
-                                           + $foreign_exchanged_reserve[$j]['value'] 
-                                           + $accumulated_loss_retained_profit[$j]['value']), 3, '.', ',').
+                            number_format(($revenue_cogs
+                                           + $total_other_income[$j]['sum'] 
+                                           + $profit_from_operation_expenses[$j]['sum'] 
+                                           + $profit_before_taxation_expenses[$j]['sum']
+                                           + $profit_after_taxation_expenses[$j]['sum'])
+                                           / $share_hoder_fund[$j]['sum'], 2, '.', ',').
                                     "</label></td>";
                     }
                     else

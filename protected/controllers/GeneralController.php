@@ -1316,7 +1316,7 @@ class GeneralController extends Controller
                         }
                         $template.="</tr>";
                     }
-
+                     
                     $template.="<tr>";
                     $template.="<td colspan='".count($year_arr)."'><hr/></td>";
                     $template.="</tr>";
