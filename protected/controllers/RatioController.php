@@ -23,7 +23,7 @@ class RatioController extends Controller
                                                        group by `year` 
                                                        order by `year` ")->queryAll();
                
-               $total_current_assets = Yii::app()->db->createCommand("select sum(IV.value) as sum,IV.year 
+               $total_current_assets = Yii::app()->db->createCommand("select sum(IV.value) as sum, IV.year 
                                                                       from tbl_item as I 
                                                                       inner join tbl_item_value as IV on I.id = IV.item_id 
                                                                       where IV.company_id = '".$company_id."' 
@@ -31,7 +31,7 @@ class RatioController extends Controller
                                                                       group by IV.year 
                                                                       order by IV.year")->queryAll();
                
-               $total_non_current_assets = Yii::app()->db->createCommand("select sum(IV.value) as sum,IV.year 
+               $total_non_current_assets = Yii::app()->db->createCommand("select sum(IV.value) as sum, IV.year 
                                                                           from tbl_item as I 
                                                                           inner join tbl_item_value as IV on I.id = IV.item_id 
                                                                           where IV.company_id = '".$company_id."' 
@@ -55,21 +55,13 @@ class RatioController extends Controller
                                                                                group by IV.year 
                                                                                order by IV.year")->queryAll();
                
-               $share_hoder_fund =Yii::app()->db->createCommand("select IV.value,IV.year 
-                                                                 from tbl_item as I 
-                                                                 inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                 where IV.company_id = '".$company_id."' 
-                                                                 and I.name = 'Shareholder’s Fund' 
-                                                                 group by IV.year 
-                                                                 order by IV.year")->queryAll();
-               
-               $share_hoder_equity =Yii::app()->db->createCommand("select IV.value,IV.year 
-                                                                   from tbl_item as I 
-                                                                   inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                   where IV.company_id = '".$company_id."' 
-                                                                   and I.name = 'Shareholder’s Equity' 
-                                                                   group by IV.year 
-                                                                   order by IV.year")->queryAll();
+                //i'm getting shareholders fund or shareholders equity as sum here.
+                $share_hoder_equity =Yii::app()->db->createCommand("select sum(IV.value) as sum 
+                                                                    from tbl_item as I 
+                                                                    inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                                    where IV.company_id = '".$company_id."' 
+                                                                    and I.category = 'FINANCED BY / EQUITY' 
+                                                                    order by I.id, IV.year")->queryAll();
                
                $revenue =Yii::app()->db->createCommand("select IV.value ,IV.year 
                                                         from tbl_item as I 
@@ -234,12 +226,13 @@ class RatioController extends Controller
                 for($j=0;$j<count($years);$j++)
                 {
                    
-                   if(isset($total_current_assets[$j]['sum']) && isset ($total_current_liabilities[$j]['sum']) && 
-                      isset ($share_hoder_fund[$j]['value']) && $share_hoder_fund[$j]['value'] !=0 ){
+                   if(isset($total_current_liabilities[$j]['sum']) && isset($total_non_current_liabilities[$j]['sum']) &&
+                      isset($share_hoder_equity[$j]['sum'])){
                        
                         $template.= "<td><label>".
-                        number_format(($total_current_assets[$j]['sum'] + $total_current_liabilities[$j]['sum'])
-                                      / $share_hoder_fund[$j]['value'], 3, '.', ',').
+                        number_format(($total_current_liabilities[$j]['sum'] 
+                                       + $total_non_current_liabilities[$j]['sum']) 
+                                       / $share_hoder_equity[$j]['sum'], 3, '.', ',').
                                     "</label></td>";
                    }
                    else
@@ -256,14 +249,14 @@ class RatioController extends Controller
                 for($j=0;$j<count($years);$j++)
                 {
                     if(isset($total_current_liabilities[$j]['sum']) && isset($total_non_current_liabilities[$j]['sum']) &&
-                       isset($total_non_current_assets[$j]['year']) && isset($total_current_assets[$j]['year']) !=0)
+                       isset($total_non_current_assets[$j]['sum']) && isset($total_current_assets[$j]['sum']) !=0)
                     {
                         
                         $template.= "<td><label>".
                             number_format(($total_current_liabilities[$j]['sum'] 
                                            + $total_non_current_liabilities[$j]['sum']) 
-                                           / ($total_non_current_assets[$j]['year'] 
-                                           +$total_current_assets[$j]['year']), 3, '.', ',').
+                                           / ($total_non_current_assets[$j]['sum'] 
+                                           +$total_current_assets[$j]['sum']), 3, '.', ',').
                                     "</label></td>";
                     }
                     else{
@@ -280,13 +273,12 @@ class RatioController extends Controller
                
                 for($j=0;$j<count($years);$j++)
                 {
-                    if(isset($total_non_current_liabilities[$j]['sum']) && isset($share_hoder_equity[$j]['value']) 
-                       && $share_hoder_equity[$j]['value'] !=0 )
+                    if(isset($total_non_current_liabilities[$j]['sum']) && isset($share_hoder_equity[$j]['sum']))
                     {
                
                         $template.="<td><label>".
                             number_format(($total_non_current_liabilities[$j]['sum'] / 
-                                           $share_hoder_equity[$j]['value']), 3, '.', ',').
+                                           $share_hoder_equity[$j]['sum']), 3, '.', ',').
                                    "</label></td>";
                     }
                     else

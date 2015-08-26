@@ -461,8 +461,8 @@ class GeneralController extends Controller
                     $template.="</tr>";
                 }
                 
-                
-                //COST OF GOOD SOLD
+                //*************************************************************************************************************
+                //COST OF GOOD SOLD (COGS)
                 $cost_of_good_sold = ($year =="")?Yii::app()->db->createCommand("
                                 select IV.item_id, I.name,IV.value,IV.year 
                                 from tbl_item as I 
@@ -519,7 +519,6 @@ class GeneralController extends Controller
                     }
 
                     $template.="<tr>";
-
                     $template.="<td colspan='".count($year_arr)."'><hr/></td>";
                     $template.="</tr>";
                     $template.="<tr>";
@@ -529,9 +528,9 @@ class GeneralController extends Controller
                     {
                         $template.="<td valign='center'><h5>".number_format($cost_of_good_sold_statitis[$year_arr[$j]])."</h5></td>";
                     }
-                     
-                     
                     $template.="</tr>";
+                     
+                    $template.="<tr>"; 
                     $template.="<td colspan='".count($year_arr)."'><hr/></td>";
                     $template.="</tr>";
                     $template.="<tr>";
@@ -548,6 +547,8 @@ class GeneralController extends Controller
                     $template.="<td colspan='".count($year_arr)."'><hr/></td>";
                     $template.="</tr>";
                  }
+                //*************************************************************************************************************
+               
                  
                 //**************************************************************************************************************
                 //OTHER INCOME
@@ -646,7 +647,7 @@ class GeneralController extends Controller
                                 and I.name not like '%interest%'
                                 order by I.id")->queryAll();
                
-//                //for taxations
+//                TAXATION
 //                $taxions = Yii::app()->db->createCommand("select IV.item_id, I.name,IV.value,IV.year 
 //                                                          from tbl_item as I 
 //                                                          inner join tbl_item_value as IV on I.id = IV.item_id 
@@ -717,7 +718,7 @@ class GeneralController extends Controller
                     for($j=1;$j<count($year_arr);$j++)
                     {
                         $template.= "<td valign='center'><h5>".
-                            number_format($revenue_statitis[$year_arr[$j]]
+                            number_format(($revenue_statitis[$year_arr[$j]] - $cost_of_good_sold_statitis[$year_arr[$j]])
                                           + $other_income_statitis[$year_arr[$j]]
                                           + $expenses_statitis[$year_arr[$j]]).
                                     "</h5></td>";
@@ -795,7 +796,7 @@ class GeneralController extends Controller
                     for($j=1;$j<count($year_arr);$j++)
                     {
                         $template.= "<td valign='center'><h5>".
-                            number_format($revenue_statitis[$year_arr[$j]]
+                            number_format(($revenue_statitis[$year_arr[$j]] - $cost_of_good_sold_statitis[$year_arr[$j]])
                                           + $other_income_statitis[$year_arr[$j]]
                                           + $expenses_statitis[$year_arr[$j]]
                                           + $expensesBT_statitis[$year_arr[$j]]).
@@ -876,7 +877,7 @@ class GeneralController extends Controller
                     for($j=1;$j<count($year_arr);$j++)
                     {
                         $template.= "<td valign='center'><h5>".
-                            number_format($revenue_statitis[$year_arr[$j]]
+                            number_format(($revenue_statitis[$year_arr[$j]] - $cost_of_good_sold_statitis[$year_arr[$j]])
                                           + $other_income_statitis[$year_arr[$j]]
                                           + $expenses_statitis[$year_arr[$j]]
                                           + $expensesBT_statitis[$year_arr[$j]]
@@ -958,7 +959,7 @@ class GeneralController extends Controller
                     for($j=1;$j<count($year_arr);$j++)
                     {
                         $template.= "<td valign='center'><h5>".
-                            number_format($revenue_statitis[$year_arr[$j]]
+                            number_format(($revenue_statitis[$year_arr[$j]] - $cost_of_good_sold_statitis[$year_arr[$j]])
                                           + $other_income_statitis[$year_arr[$j]]
                                           + $expenses_statitis[$year_arr[$j]]
                                           + $expensesBT_statitis[$year_arr[$j]]
@@ -1242,17 +1243,11 @@ class GeneralController extends Controller
                         $netCL=number_format(($current_asset_statitis[$year_arr[$j]]
                                                               - $current_liabilities_statitis[$year_arr[$j]]));
                     }
-                     
                     $template.="</tr>";
-                    $template.="<tr>";
-                    $template.="<td colspan='".count($year_arr)."'><hr/></td>";
-                    $template.="</tr>";
-                     
-                    
                  }
                 
                 //************************************BALANCE NO. 1********************************************
-                    $template.="</tr>";
+                    $template.="<tr>";
                     $template.="<td colspan='".count($year_arr)."'><hr/></td>";
                     $template.="</tr>";
                     $template.="<tr>";
@@ -1267,9 +1262,10 @@ class GeneralController extends Controller
                                            - $current_liabilities_statitis[$year_arr[$j]])).
                                    "</h5></td>";
                     }
+                    $template.="</tr>";
                  //********************************************************************************************
                  
-                 //FINANCED BY / EQUITY
+                //FINANCED BY / EQUITY
                 $finaced_by_or_equity = ($year =="")?Yii::app()->db->createCommand("
                                 select IV.item_id, I.name,IV.value,IV.year 
                                 from tbl_item as I 
@@ -1322,7 +1318,6 @@ class GeneralController extends Controller
                     }
 
                     $template.="<tr>";
-
                     $template.="<td colspan='".count($year_arr)."'><hr/></td>";
                     $template.="</tr>";
                     $template.="<tr>";
@@ -1361,7 +1356,7 @@ class GeneralController extends Controller
                     $template.="<tr>";
                     $template.="<td colspan='".count($year_arr)."'><h5>NON-CURRENT LIABILITIES</h5></td>";
                     $template.="</tr>";
-                    $template.="</tr>";
+                    $template.="<tr>";
 
                     for($i=0;$i<count($no_current_liabilities);)
                     {
@@ -1386,9 +1381,9 @@ class GeneralController extends Controller
                         }
                         $template.="</tr>";
                     }
+                    $template.="</tr>";
 
                     $template.="<tr>";
-
                     $template.="<td colspan='".count($year_arr)."'><hr/></td>";
                     $template.="</tr>";
                     $template.="<tr>";
@@ -1401,7 +1396,7 @@ class GeneralController extends Controller
                     $template.="</tr>";
                      
                     //************************************BALANCE NO. 2********************************************
-                    $template.="</tr>";
+                    $template.="<tr>";
                     $template.="<td colspan='".count($year_arr)."'><hr/></td>";
                     $template.="</tr>";
                     $template.="<tr>";
@@ -1414,6 +1409,7 @@ class GeneralController extends Controller
                                        "</h5></td>";
 
                     }
+                    $template.="</tr>";
                     //*********************************************************************************************
   
 //                    $template.="<tr>";
