@@ -54,20 +54,21 @@ class RatioController extends Controller
                                                                                and I.category = 'NON-CURRENT LIABILITIES' 
                                                                                group by IV.year 
                                                                                order by IV.year")->queryAll();
+               
     //****************************************************************************************************************************
     //current assets withot inventories and prepayments
-    $ca_without_inventory_prepayment = Yii::app()->db->createCommand("select sum(IV.value) as sum, IV.year 
-                                                                      from tbl_item as I 
-                                                                      inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                      where IV.company_id = '".$company_id."' 
-                                                                      and I.category = 'CURRENT ASSETS'
-                                                                      and I.name not like '%inventor%'
-                                                                      and I.name not like '%prepayment%'
-                                                                      group by IV.year 
-                                                                      order by IV.year")->queryAll();
-    //dont forget the COGS value          
-               $cost_of_good_sold = Yii::app()->db->createCommand("
+    $ca_without_inventory_prepayment = Yii::app()->db->createCommand("
                                                                     select sum(IV.value) as sum, IV.year 
+                                                                    from tbl_item as I 
+                                                                    inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                                    where IV.company_id = '".$company_id."' 
+                                                                    and I.category = 'CURRENT ASSETS'
+                                                                    and I.name not like '%inventor%'
+                                                                    and I.name not like '%prepayment%'
+                                                                    group by IV.year 
+                                                                    order by IV.year")->queryAll();
+    //dont forget the COGS value          
+               $cost_of_good_sold = Yii::app()->db->createCommand(" select sum(IV.value) as sum, IV.year 
                                                                     from tbl_item as I 
                                                                     inner join tbl_item_value as IV on I.id = IV.item_id 
                                                                     where IV.company_id = '".$company_id."' 
@@ -76,8 +77,7 @@ class RatioController extends Controller
                                                                     ")->queryAll();
                
     //i'm getting shareholders fund as sum here.
-                $share_hoder_fund = Yii::app()->db->createCommand("
-                                                                    select sum(IV.value) as sum, IV.year 
+                $share_hoder_fund = Yii::app()->db->createCommand(" select sum(IV.value) as sum, IV.year 
                                                                     from tbl_item as I 
                                                                     inner join tbl_item_value as IV on I.id = IV.item_id 
                                                                     where IV.company_id = '".$company_id."' 
