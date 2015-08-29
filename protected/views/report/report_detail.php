@@ -85,7 +85,7 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                     ?>
                 </tr>
                 <tr>
-                    <td>Revenue</td>
+                    <td>REVENUE</td>
                     <?php foreach ($revenues as $revenue ):?>
                     <td>
                     <?php 
@@ -95,7 +95,7 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                     <?php endforeach; ?>
                  <tr>
                  <tr>
-                    <td>Expenses</td>
+                    <td>EXPENSES</td>
                     <?php foreach ($expenses as $expense ):?>
                     <td><?php 
                         echo  number_format($expense, 3, '.', ',');
@@ -159,10 +159,10 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                         'borderWidth': 0
                     },
                     'series': [{
-                        'name': 'Revenue',
+                        'name': 'REVENUE',
                         'data': ".$revenue_data."
                         }, {
-                        'name': 'Expenses',
+                        'name': 'EXPENSES',
                         'data': ".$expense_data."
                         }]
                     }";
@@ -441,7 +441,7 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                     <?php endforeach;?>
                 </tr>
                 <tr>
-                    <td>INTERES CONVERAGE</td>
+                    <td>INTEREST COVERAGE</td>
                     
                    <?php foreach ($interes_coverages as $item ): ?>
                     <td><?php echo number_format($item, 3, '.', ',');?></td>
@@ -460,7 +460,7 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                     <?php endforeach;?>
                  <tr> 
                  <tr>
-                    <td>GROSS OPERATING MARGIN',</td>
+                    <td>GROSS OPERATING MARGIN</td>
                    <?php foreach ($gross_operating_margins as $item ): ?>
                     <td><?php echo number_format($item, 3, '.', ',');?></td>
                     <?php endforeach;?>
@@ -520,7 +520,7 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                         'borderWidth': 0
                     },
                     'series': [{
-                        'name': 'INTERES CONVERAGE',
+                        'name': 'INTEREST CONVERAGE',
                         'data': ".json_encode($interes_coverages)."
                         }, {
                         'name': 'GROSS PROFIT MARGIN',
@@ -552,13 +552,13 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                     <?php endforeach;?>
                 </tr>
                 <tr>
-                    <td>RETURN ON EQUITY(ROE)</td>
+                    <td>RETURN ON EQUITY (ROE)</td>
                    <?php foreach ($return_on_equities as $item ): ?>
                     <td><?php echo number_format($item, 3, '.', ',');?></td>
                     <?php endforeach;?>
                  <tr>
                  <tr>
-                    <td>RETURN ON ASSETS(ROA)</td>
+                    <td>RETURN ON ASSETS (ROA)</td>
                    <?php foreach ($return_on_assets as $item ): ?>
                     <td><?php echo number_format($item, 3, '.', ',');?></td>
                     <?php endforeach;?>
@@ -570,7 +570,7 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                     <?php endforeach;?>
                  <tr>                     
                  <tr>
-                    <td>ERNING PER SHARE</td>
+                    <td>EARNING PER SHARE</td>
                    <?php foreach ($earning_per_shares as $item ): ?>
                     <td><?php echo number_format($item, 3, '.', ',');?></td>
                     <?php endforeach;?>
@@ -624,16 +624,16 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                         'borderWidth': 0
                     },
                     'series': [{
-                        'name': 'RETURN ON EQUITY(ROE)',
+                        'name': 'RETURN ON EQUITY (ROE)',
                         'data': ".json_encode($return_on_equities)."
                         }, {
-                        'name': 'RETURN ON ASSETS(ROA)',
+                        'name': 'RETURN ON ASSETS (ROA)',
                         'data': ".json_encode($return_on_assets)."
                         }, {
-                        'name': 'RETURN ON CAPITAL <br/>EMPLOYED(ROCE)',
+                        'name': 'RETURN ON CAPITAL <br/>EMPLOYED (ROCE)',
                         'data': ".  json_encode($return_on_capital_employeds)."
                         }, {
-                        'name': 'ERNING PER SHARE',
+                        'name': 'EARNING PER SHARE',
                         'data': ".  json_encode($earning_per_shares)."
                         }]
                     }"
@@ -735,13 +735,13 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                     <?php endforeach;?>
                 </tr>
                 <tr>
-                    <td>GERING RATIO(DEBT/EQUITY RATIO</td>
+                    <td>GEARING RATIO (DEBT/EQUITY)</td>
                      <?php foreach ($gering_ratio_debt_equitys as $item ): ?>
                     <td><?php echo number_format($item, 3, '.', ',');?></td>
                     <?php endforeach;?>
                  <tr>
                  <tr>
-                    <td>GERING RATIO(TOTAL FINANCE)</td>
+                    <td>GEARING RATIO (DEBT/DEBT+EQUITY)</td>
                      <?php foreach ($gering_ratio_total_finances as $item ): ?>
                     <td><?php echo number_format($item, 3, '.', ',');?></td>
                     <?php endforeach;?>
@@ -800,10 +800,10 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                         'borderWidth': 0
                     },
                     'series': [{
-                        'name': 'GERING <br/>RATIO(DEBT/EQUITY <br/>RATIO',
+                        'name': 'GEARING <br/>RATIO (DEBT/EQUITY)',
                         'data': ".  json_encode($gering_ratio_debt_equitys)."
                         }, {
-                        'name': 'GERING <br/>RATIO(TOTAL <br/>FINANCE)',
+                        'name': 'GEARING <br/>RATIO (DEBT/DEBT+EQUITY)',
                         'data': ".  json_encode($gering_ratio_total_finances)."
                         }, {
                         'name': 'INTEREST COVER',

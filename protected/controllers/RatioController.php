@@ -23,118 +23,119 @@ class RatioController extends Controller
                                                        group by `year` 
                                                        order by `year` ")->queryAll();
                
-               $total_current_assets = Yii::app()->db->createCommand("select sum(IV.value) as sum, IV.year 
-                                                                      from tbl_item as I 
-                                                                      inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                      where IV.company_id = '".$company_id."' 
-                                                                      and I.category = 'CURRENT ASSETS' 
-                                                                      group by IV.year 
-                                                                      order by IV.year")->queryAll();
+               $total_current_assets = Yii::app()->db->createCommand("
+                                                        select sum(IV.value) as sum, IV.year 
+                                                        from tbl_item as I 
+                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                        where IV.company_id = '".$company_id."' 
+                                                        and I.category = 'CURRENT ASSETS' 
+                                                        group by IV.year 
+                                                        order by IV.year")->queryAll();
                
-               $total_non_current_assets = Yii::app()->db->createCommand("select sum(IV.value) as sum, IV.year 
-                                                                          from tbl_item as I 
-                                                                          inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                          where IV.company_id = '".$company_id."' 
-                                                                          and I.category = 'NON CURRENT ASSET' 
-                                                                          group by IV.year 
-                                                                          order by IV.year")->queryAll();
+               $total_non_current_assets = Yii::app()->db->createCommand("
+                                                        select sum(IV.value) as sum, IV.year 
+                                                        from tbl_item as I 
+                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                        where IV.company_id = '".$company_id."' 
+                                                        and I.category = 'NON CURRENT ASSET' 
+                                                        group by IV.year 
+                                                        order by IV.year")->queryAll();
                
-               $total_current_liabilities = Yii::app()->db->createCommand("select sum(IV.value) as sum,IV.year 
-                                                                           from tbl_item as I 
-                                                                           inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                           where IV.company_id = '".$company_id."' 
-                                                                           and I.category = 'CURRENT LIABILITIES' 
-                                                                           group by IV.year 
-                                                                           order by IV.year")->queryAll();
+               $total_current_liabilities = Yii::app()->db->createCommand("
+                                                        select sum(IV.value) as sum,IV.year 
+                                                        from tbl_item as I 
+                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                        where IV.company_id = '".$company_id."' 
+                                                        and I.category = 'CURRENT LIABILITIES' 
+                                                        group by IV.year 
+                                                        order by IV.year")->queryAll();
                
-               $total_non_current_liabilities = Yii::app()->db->createCommand("select sum(IV.value) as sum,IV.year 
-                                                                               from tbl_item as I 
-                                                                               inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                               where IV.company_id = '".$company_id."' 
-                                                                               and I.category = 'NON-CURRENT LIABILITIES' 
-                                                                               group by IV.year 
-                                                                               order by IV.year")->queryAll();
+               $total_non_current_liabilities = Yii::app()->db->createCommand("
+                                                        select sum(IV.value) as sum,IV.year 
+                                                        from tbl_item as I 
+                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                        where IV.company_id = '".$company_id."' 
+                                                        and I.category = 'NON-CURRENT LIABILITIES' 
+                                                        group by IV.year 
+                                                        order by IV.year")->queryAll();
                
-    //****************************************************************************************************************************
-    //current assets withot inventories and prepayments
-    $ca_without_inventory_prepayment = Yii::app()->db->createCommand("
-                                                                    select sum(IV.value) as sum, IV.year 
-                                                                    from tbl_item as I 
-                                                                    inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                    where IV.company_id = '".$company_id."' 
-                                                                    and I.category = 'CURRENT ASSETS'
-                                                                    and I.name not like '%inventor%'
-                                                                    and I.name not like '%prepayment%'
-                                                                    group by IV.year 
-                                                                    order by IV.year")->queryAll();
-    //dont forget the COGS value          
-               $cost_of_good_sold = Yii::app()->db->createCommand(" select sum(IV.value) as sum, IV.year 
-                                                                    from tbl_item as I 
-                                                                    inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                    where IV.company_id = '".$company_id."' 
-                                                                    and I.category = 'COST OF GOOD SOLD' 
-                                                                    order by I.id, IV.year
-                                                                    ")->queryAll();
+               //current assets withot inventories and prepayments
+               $ca_without_inventory_prepayment = Yii::app()->db->createCommand("
+                                                        select sum(IV.value) as sum, IV.year 
+                                                        from tbl_item as I 
+                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                        where IV.company_id = '".$company_id."' 
+                                                        and I.category = 'CURRENT ASSETS'
+                                                        and I.name not like '%inventor%'
+                                                        and I.name not like '%prepayment%'
+                                                        group by IV.year 
+                                                        order by IV.year")->queryAll();
+               //dont forget the COGS value          
+               $cost_of_good_sold = Yii::app()->db->createCommand(" 
+                                                        select sum(IV.value) as sum, IV.year 
+                                                        from tbl_item as I 
+                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                        where IV.company_id = '".$company_id."' 
+                                                        and I.category = 'COST OF GOOD SOLD' 
+                                                        order by I.id, IV.year")->queryAll();
                
-    //i'm getting shareholders fund as sum here.
-                $share_hoder_fund = Yii::app()->db->createCommand(" select sum(IV.value) as sum, IV.year 
-                                                                    from tbl_item as I 
-                                                                    inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                    where IV.company_id = '".$company_id."' 
-                                                                    and I.category = 'FINANCED BY / EQUITY'
-                                                                    and I.name not like '%minority interest%'
-                                                                    and I.name not like '%Preference Shares for Shareholders Equity%'
-                                                                    order by I.id, IV.year ")->queryAll();
+                //i'm getting shareholders fund as sum here.
+                $share_hoder_fund = Yii::app()->db->createCommand(" 
+                                                        select sum(IV.value) as sum, IV.year 
+                                                        from tbl_item as I 
+                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                        where IV.company_id = '".$company_id."' 
+                                                        and I.category = 'FINANCED BY / EQUITY'
+                                                        and I.name not like '%minority interest%'
+                                                        and I.name not like '%Preference Shares for Shareholders Equity%'
+                                                        order by I.id, IV.year ")->queryAll();
                
-    //i'm getting shareholders equity as sum here.
+                //i'm getting shareholders equity as sum here.
                 $share_hoder_equity = Yii::app()->db->createCommand("
-                                                                    select sum(IV.value) as sum, IV.year 
-                                                                    from tbl_item as I 
-                                                                    inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                    where IV.company_id = '".$company_id."' 
-                                                                    and I.category = 'FINANCED BY / EQUITY' 
-                                                                    order by I.id, IV.year ")->queryAll();
+                                                        select sum(IV.value) as sum, IV.year 
+                                                        from tbl_item as I 
+                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                        where IV.company_id = '".$company_id."' 
+                                                        and I.category = 'FINANCED BY / EQUITY' 
+                                                        order by I.id, IV.year ")->queryAll();
                
-    //now lets get the EXPENSES value of PROFIT FROM OPERATION with string 'expenses' only
+               //now lets get the EXPENSES value of PROFIT FROM OPERATION with string 'expenses' only
                $profit_from_operation_expenses = Yii::app()->db->createCommand("
-                                                                    select sum(IV.value) as sum, IV.year
-                                                                    from tbl_item as I 
-                                                                    inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                    where IV.company_id = '".$company_id."' 
-                                                                    and I.category = 'EXPENSES'
-                                                                    and I.name not like '%share of%'
-                                                                    and I.name not like '%finance%' 
-                                                                    and I.name not like '%tax%'
-                                                                    and I.name not like '%interest%'
-                                                                    order by I.id, IV.year ")->queryAll();
+                                                        select sum(IV.value) as sum, IV.year
+                                                        from tbl_item as I 
+                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                        where IV.company_id = '".$company_id."' 
+                                                        and I.category = 'EXPENSES'
+                                                        and I.name not like '%share of%'
+                                                        and I.name not like '%finance%' 
+                                                        and I.name not like '%tax%'
+                                                        and I.name not like '%interest%'
+                                                        order by I.id, IV.year ")->queryAll();
                
-    //then, lets get the EXPENSES value of PROFIT BEFORE TAXATION with string 'share of' and 'finance' only
+               //then, lets get the EXPENSES value of PROFIT BEFORE TAXATION with string 'share of' and 'finance' only
                $profit_before_taxation_expenses = Yii::app()->db->createCommand("
-                                                                    select sum(IV.value) as sum, IV.year
-                                                                    from tbl_item as I 
-                                                                    inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                    where IV.company_id = '".$company_id."' 
-                                                                    and I.category = 'EXPENSES'
-                                                                    and I.name not like '%expense%'
-                                                                    and I.name not like '%interest%'
-                                                                    and I.name not like '%tax%'
-                                                                    order by I.id, IV.year ")->queryAll();
+                                                        select sum(IV.value) as sum, IV.year
+                                                        from tbl_item as I 
+                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                        where IV.company_id = '".$company_id."' 
+                                                        and I.category = 'EXPENSES'
+                                                        and I.name not like '%expense%'
+                                                        and I.name not like '%interest%'
+                                                        and I.name not like '%tax%'
+                                                        order by I.id, IV.year ")->queryAll();
                
-    //after that, proceed to the EXPENSES value of PROFIT AFTER TAXATION with string 'tax' only
+               //after that, proceed to the EXPENSES value of PROFIT AFTER TAXATION with string 'tax' only
                $profit_after_taxation_expenses = Yii::app()->db->createCommand("
-                                                                    select sum(IV.value) as sum, IV.year
-                                                                    from tbl_item as I 
-                                                                    inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                    where IV.company_id = '".$company_id."' 
-                                                                    and I.category = 'EXPENSES'
-                                                                    and I.name not like '%expense%'
-                                                                    and I.name not like '%interest%'
-                                                                    and I.name not like '%share of%'
-                                                                    and I.name not like '%finance%' 
-                                                                    order by I.id, IV.year ")->queryAll();
-               
-    //************************************************************************************************************************************
-               
+                                                        select sum(IV.value) as sum, IV.year
+                                                        from tbl_item as I 
+                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                        where IV.company_id = '".$company_id."' 
+                                                        and I.category = 'EXPENSES'
+                                                        and I.name not like '%expense%'
+                                                        and I.name not like '%interest%'
+                                                        and I.name not like '%share of%'
+                                                        and I.name not like '%finance%' 
+                                                        order by I.id, IV.year ")->queryAll();
                
                $revenue =Yii::app()->db->createCommand("select IV.value, IV.year 
                                                         from tbl_item as I 
@@ -144,87 +145,26 @@ class RatioController extends Controller
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
                
-               $total_other_income =Yii::app()->db->createCommand("select sum(IV.value) as sum, IV.year 
-                                                                   from tbl_item as I 
-                                                                   inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                   where IV.company_id = '".$company_id."' 
-                                                                   and I.category = 'OTHER INCOME' 
-                                                                   group by IV.year 
-                                                                   order by IV.year")->queryAll();
+               $total_other_income =Yii::app()->db->createCommand("
+                                                        select sum(IV.value) as sum, IV.year 
+                                                        from tbl_item as I 
+                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                        where IV.company_id = '".$company_id."' 
+                                                        and I.category = 'OTHER INCOME' 
+                                                        group by IV.year 
+                                                        order by IV.year")->queryAll();
                
-               $total_expense =Yii::app()->db->createCommand("select sum(IV.value) as sum, IV.year 
-                                                              from tbl_item as I 
-                                                              inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                              where IV.company_id = '".$company_id."' 
-                                                              and I.category = 'EXPENSES' 
-                                                              group by IV.year 
-                                                              order by IV.year")->queryAll();
+               $finance_cost =Yii::app()->db->createCommand("
+                                                        select sum(IV.value) as sum, IV.year 
+                                                        from tbl_item as I 
+                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                        where IV.company_id = '".$company_id."'
+                                                        and I.category = 'EXPENSES' 
+                                                        and I.name like '%finance%' 
+                                                        group by IV.year 
+                                                        order by IV.year")->queryAll();
                
-               $finance_cost =Yii::app()->db->createCommand("select sum(IV.value) as sum, IV.year 
-                                                             from tbl_item as I 
-                                                             inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                             where IV.company_id = '".$company_id."'
-                                                             and I.category = 'EXPENSES' 
-                                                             and I.name like '%finance%' 
-                                                             group by IV.year 
-                                                             order by IV.year")->queryAll();
-               
-    $share_of_profit_in_asociated_company =Yii::app()->db->createCommand("select IV.value, IV.year 
-                                                                          from tbl_item as I 
-                                                                          inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                          where IV.company_id = '".$company_id."' 
-                                                                          and I.name = 'Share of (Loss) Profit in an Associated Company' 
-                                                                          group by IV.year 
-                                                                          order by IV.year")->queryAll();
-               
-               $taxation =Yii::app()->db->createCommand("select IV.value, IV.year 
-                                                         from tbl_item as I 
-                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                         where IV.company_id = '".$company_id."' 
-                                                         and I.name = 'Share of (Loss) Profit in an Associated Company' 
-                                                         group by IV.year 
-                                                         order by IV.year")->queryAll();
-               
-               $share_capital = Yii::app()->db->createCommand("select IV.value, IV.year 
-                                                               from tbl_item as I 
-                                                               inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                               where IV.company_id = '".$company_id."' 
-                                                               and I.name = 'Share Capital' 
-                                                               group by IV.year 
-                                                               order by IV.year")->queryAll(); 
-               
-               $share_premum = Yii::app()->db->createCommand("select IV.value, IV.year 
-                                                              from tbl_item as I 
-                                                              inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                              where IV.company_id = '".$company_id."' 
-                                                              and I.name = 'Share Premium' 
-                                                              group by IV.year 
-                                                              order by IV.year")->queryAll();
-               
-               $preference_shares = Yii::app()->db->createCommand("select IV.value, IV.year 
-                                                                   from tbl_item as I 
-                                                                   inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                   where IV.company_id = '".$company_id."' 
-                                                                   and I.name = 'Preference Shares' 
-                                                                   group by IV.year 
-                                                                   order by IV.year")->queryAll();
-               
-               $foreign_exchanged_reserve = Yii::app()->db->createCommand("select IV.value, IV.year 
-                                                                           from tbl_item as I 
-                                                                           inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                           where IV.company_id = '".$company_id."' 
-                                                                           and I.name = 'Foreign Exchange Reserve' 
-                                                                           group by IV.year 
-                                                                           order by IV.year")->queryAll();
-               
-               $accumulated_loss_retained_profit = Yii::app()->db->createCommand("select IV.value, IV.year 
-                                                                                  from tbl_item as I 
-                                                                                  inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                                                  where IV.company_id = '".$company_id."' 
-                                                                                  and I.name = '(Accumulated Loss)/Retained Profit' 
-                                                                                  group by IV.year 
-                                                                                  order by IV.year")->queryAll();
-               
+
 //**************************************************************************************************************************************
                
                 $template.="<h4><span style='padding-left: 170px;'>RATIO</span></h4>";
@@ -257,7 +197,8 @@ class RatioController extends Controller
                     {
                         
                             $template.= "<td><label>".
-                                number_format(($total_current_assets[$j]['sum'] / $total_current_liabilities[$j]['sum']), 3, '.', ',').
+                                number_format(($total_current_assets[$j]['sum'] 
+                                               / $total_current_liabilities[$j]['sum']), 3, '.', ',').
                                         "</label></td>";
                     }
                     else
@@ -280,7 +221,8 @@ class RatioController extends Controller
                      {
                          
                         $template.= "<td><label>".
-                        number_format(($ca_without_inventory_prepayment[$j]['sum'] / $total_current_liabilities[$j]['sum']), 3, '.', ',').
+                        number_format(($ca_without_inventory_prepayment[$j]['sum'] 
+                                       / $total_current_liabilities[$j]['sum']), 3, '.', ',').
                                     "</label></td>";
                      }
                     else
@@ -323,7 +265,7 @@ class RatioController extends Controller
                 for($j=0;$j<count($years);$j++)
                 {
                     if(isset($total_current_liabilities[$j]['sum']) && isset($total_non_current_liabilities[$j]['sum']) &&
-                       isset($total_non_current_assets[$j]['sum']) && isset($total_current_assets[$j]['sum']) !=0)
+                       isset($total_non_current_assets[$j]['sum']) && isset($total_current_assets[$j]['sum']))
                     {
                         
                         $template.= "<td><label>".
@@ -351,8 +293,8 @@ class RatioController extends Controller
                     {
                
                         $template.="<td><label>".
-                            number_format(($total_non_current_liabilities[$j]['sum'] / 
-                                           $share_hoder_equity[$j]['sum']), 3, '.', ',').
+                            number_format(($total_non_current_liabilities[$j]['sum'] 
+                                           / $share_hoder_equity[$j]['sum']), 3, '.', ',').
                                    "</label></td>";
                     }
                     else
@@ -381,7 +323,6 @@ class RatioController extends Controller
                     
                     if(isset($revenue_cogs) && isset($total_other_income[$j]['sum']) && isset($profit_from_operation_expenses[$j]['sum']))
                     {
-                        $cost_of_good_sold[$j]['sum'];
                         
                         $template.= "<td><label>".
                             number_format(($revenue_cogs

@@ -1,5 +1,6 @@
 <?php
 
+
 class RatioController extends Controller
 {
 	public function actionIndex()
