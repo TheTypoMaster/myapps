@@ -44,7 +44,7 @@ $this->breadcrumbs=array(
                 url: "<?php echo Yii::app()->getBaseUrl();?>/index.php/ratio/ratiosreport",
                 type: "post",
                 data: values,
-                success: function(data){
+                success: function(data) {
                     $('#ratio_content').append(data);
                 },
                 error:function(){

@@ -1418,3 +1418,102 @@ Stack trace:
 REQUEST_URI=/CADS/myapps/index.php/report/index
 in /var/www/html/CADS/myapps/protected/controllers/ReportController.php (312)
 in /var/www/html/CADS/myapps/index.php (17)
+2015/08/30 01:25:16 [error] [php] Undefined offset: 1 (/var/www/html/CADS/myapps/protected/controllers/RatioController.php:334)
+Stack trace:
+#0 /var/www/html/yii/framework/web/CController.php(286): RatioController->runAction()
+#1 /var/www/html/yii/framework/web/CController.php(265): RatioController->runActionWithFilters()
+#2 /var/www/html/yii/framework/web/CWebApplication.php(282): RatioController->run()
+#3 /var/www/html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#4 /var/www/html/yii/framework/base/CApplication.php(184): CWebApplication->processRequest()
+#5 /var/www/html/CADS/myapps/index.php(17): CWebApplication->run()
+REQUEST_URI=/CADS/myapps/index.php/ratio/ratiosreport
+in /var/www/html/CADS/myapps/protected/controllers/RatioController.php (334)
+in /var/www/html/CADS/myapps/index.php (17)
+2015/08/30 01:25:19 [error] [php] Undefined offset: 1 (/var/www/html/CADS/myapps/protected/controllers/RatioController.php:334)
+Stack trace:
+#0 /var/www/html/yii/framework/web/CController.php(286): RatioController->runAction()
+#1 /var/www/html/yii/framework/web/CController.php(265): RatioController->runActionWithFilters()
+#2 /var/www/html/yii/framework/web/CWebApplication.php(282): RatioController->run()
+#3 /var/www/html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#4 /var/www/html/yii/framework/base/CApplication.php(184): CWebApplication->processRequest()
+#5 /var/www/html/CADS/myapps/index.php(17): CWebApplication->run()
+REQUEST_URI=/CADS/myapps/index.php/ratio/ratiosreport
+in /var/www/html/CADS/myapps/protected/controllers/RatioController.php (334)
+in /var/www/html/CADS/myapps/index.php (17)
+2015/08/30 01:25:44 [error] [php] Undefined offset: 1 (/var/www/html/CADS/myapps/protected/controllers/RatioController.php:334)
+Stack trace:
+#0 /var/www/html/yii/framework/web/CController.php(286): RatioController->runAction()
+#1 /var/www/html/yii/framework/web/CController.php(265): RatioController->runActionWithFilters()
+#2 /var/www/html/yii/framework/web/CWebApplication.php(282): RatioController->run()
+#3 /var/www/html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#4 /var/www/html/yii/framework/base/CApplication.php(184): CWebApplication->processRequest()
+#5 /var/www/html/CADS/myapps/index.php(17): CWebApplication->run()
+REQUEST_URI=/CADS/myapps/index.php/ratio/ratiosreport
+in /var/www/html/CADS/myapps/protected/controllers/RatioController.php (334)
+in /var/www/html/CADS/myapps/index.php (17)
+2015/08/30 01:26:53 [error] [php] Undefined offset: 1 (/var/www/html/CADS/myapps/protected/controllers/RatioController.php:334)
+Stack trace:
+#0 /var/www/html/yii/framework/web/CController.php(286): RatioController->runAction()
+#1 /var/www/html/yii/framework/web/CController.php(265): RatioController->runActionWithFilters()
+#2 /var/www/html/yii/framework/web/CWebApplication.php(282): RatioController->run()
+#3 /var/www/html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#4 /var/www/html/yii/framework/base/CApplication.php(184): CWebApplication->processRequest()
+#5 /var/www/html/CADS/myapps/index.php(17): CWebApplication->run()
+REQUEST_URI=/CADS/myapps/index.php/ratio/ratiosreport
+in /var/www/html/CADS/myapps/protected/controllers/RatioController.php (334)
+in /var/www/html/CADS/myapps/index.php (17)
+2015/08/30 01:33:47 [error] [php] Undefined offset: 1 (/var/www/html/CADS/myapps/protected/controllers/RatioController.php:334)
+Stack trace:
+#0 /var/www/html/yii/framework/web/CController.php(286): RatioController->runAction()
+#1 /var/www/html/yii/framework/web/CController.php(265): RatioController->runActionWithFilters()
+#2 /var/www/html/yii/framework/web/CWebApplication.php(282): RatioController->run()
+#3 /var/www/html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#4 /var/www/html/yii/framework/base/CApplication.php(184): CWebApplication->processRequest()
+#5 /var/www/html/CADS/myapps/index.php(17): CWebApplication->run()
+REQUEST_URI=/CADS/myapps/index.php/ratio/ratiosreport
+in /var/www/html/CADS/myapps/protected/controllers/RatioController.php (334)
+in /var/www/html/CADS/myapps/index.php (17)
+2015/08/30 01:38:45 [error] [php] Undefined offset: 1 (/var/www/html/CADS/myapps/protected/controllers/RatioController.php:334)
+Stack trace:
+#0 /var/www/html/yii/framework/web/CController.php(286): RatioController->runAction()
+#1 /var/www/html/yii/framework/web/CController.php(265): RatioController->runActionWithFilters()
+#2 /var/www/html/yii/framework/web/CWebApplication.php(282): RatioController->run()
+#3 /var/www/html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#4 /var/www/html/yii/framework/base/CApplication.php(184): CWebApplication->processRequest()
+#5 /var/www/html/CADS/myapps/index.php(17): CWebApplication->run()
+REQUEST_URI=/CADS/myapps/index.php/ratio/ratiosreport
+in /var/www/html/CADS/myapps/protected/controllers/RatioController.php (334)
+in /var/www/html/CADS/myapps/index.php (17)
+2015/08/30 01:40:06 [error] [php] Undefined offset: 1 (/var/www/html/CADS/myapps/protected/controllers/RatioController.php:334)
+Stack trace:
+#0 /var/www/html/yii/framework/web/CController.php(286): RatioController->runAction()
+#1 /var/www/html/yii/framework/web/CController.php(265): RatioController->runActionWithFilters()
+#2 /var/www/html/yii/framework/web/CWebApplication.php(282): RatioController->run()
+#3 /var/www/html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#4 /var/www/html/yii/framework/base/CApplication.php(184): CWebApplication->processRequest()
+#5 /var/www/html/CADS/myapps/index.php(17): CWebApplication->run()
+REQUEST_URI=/CADS/myapps/index.php/ratio/ratiosreport
+in /var/www/html/CADS/myapps/protected/controllers/RatioController.php (334)
+in /var/www/html/CADS/myapps/index.php (17)
+2015/08/30 01:40:17 [error] [php] Undefined offset: 1 (/var/www/html/CADS/myapps/protected/controllers/RatioController.php:334)
+Stack trace:
+#0 /var/www/html/yii/framework/web/CController.php(286): RatioController->runAction()
+#1 /var/www/html/yii/framework/web/CController.php(265): RatioController->runActionWithFilters()
+#2 /var/www/html/yii/framework/web/CWebApplication.php(282): RatioController->run()
+#3 /var/www/html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#4 /var/www/html/yii/framework/base/CApplication.php(184): CWebApplication->processRequest()
+#5 /var/www/html/CADS/myapps/index.php(17): CWebApplication->run()
+REQUEST_URI=/CADS/myapps/index.php/ratio/ratiosreport
+in /var/www/html/CADS/myapps/protected/controllers/RatioController.php (334)
+in /var/www/html/CADS/myapps/index.php (17)
+2015/08/30 01:40:59 [error] [php] Undefined offset: 1 (/var/www/html/CADS/myapps/protected/controllers/RatioController.php:334)
+Stack trace:
+#0 /var/www/html/yii/framework/web/CController.php(286): RatioController->runAction()
+#1 /var/www/html/yii/framework/web/CController.php(265): RatioController->runActionWithFilters()
+#2 /var/www/html/yii/framework/web/CWebApplication.php(282): RatioController->run()
+#3 /var/www/html/yii/framework/web/CWebApplication.php(141): CWebApplication->runController()
+#4 /var/www/html/yii/framework/base/CApplication.php(184): CWebApplication->processRequest()
+#5 /var/www/html/CADS/myapps/index.php(17): CWebApplication->run()
+REQUEST_URI=/CADS/myapps/index.php/ratio/ratiosreport
+in /var/www/html/CADS/myapps/protected/controllers/RatioController.php (334)
+in /var/www/html/CADS/myapps/index.php (17)
