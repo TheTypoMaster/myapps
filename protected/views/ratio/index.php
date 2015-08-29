@@ -27,29 +27,32 @@ $this->breadcrumbs=array(
         $("#ratios_company_id").change(function (){
             $("#company_name").val($('#ratios_company_id option:selected').text())
         });
-   $("#ratios_form").submit(function(event) {
+         
+     $("#ratios_form").submit(function(event) {
   
-        /* Stop form from submitting normally */
-        event.preventDefault();
-        /* Get some values from elements on the page: */
-        var values = $(this).serialize();
+         /* Stop form from submitting normally */
+         event.preventDefault();
+         
+         /* Get some values from elements on the page: */
+         var values = $(this).serialize();
          var company_name = $('#ratios_company_id option:selected').text();
-         values+='&ratios_company_name='+company_name;
-          $('#ratio_content').empty();
-        $.ajax({
-        url: "<?php echo Yii::app()->getBaseUrl();?>/index.php/ratio/ratiosreport",
-        type: "post",
-        data: values,
-        success: function(data){
-           $('#ratio_content').append(data);
-        },
-        error:function(){
-            
-            alert('There is error while submit');
-            //$("#result").html('There is error while submit');
-        }
-    });
-  }); 
+         var year = $('#ratios_company_year option:selected').text();
+         values+='&ratios_company_name='+company_name+'&ratios_company_year='+year;
+         $('#ratio_content').empty();
+         
+         $.ajax({
+                url: "<?php echo Yii::app()->getBaseUrl();?>/index.php/ratio/ratiosreport",
+                type: "post",
+                data: values,
+                success: function(data){
+                    $('#ratio_content').append(data);
+                },
+                error:function(){
+                    alert('Error on Submiting Form');
+                    //$("#result").html('There is error while submit');
+                }
+         });
+     }); 
         
     });
     
@@ -87,13 +90,18 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_ratio.JPG', "this is
                                                            inner join tbl_item_value as IV on C.company_id = IV.company_id 
                                                            group by C.company_id")->queryAll();
 
+                $yearInvolve = Yii::app()->db->createCommand("select IV.year 
+                                                           from tbl_registration as C 
+                                                           inner join tbl_item_value as IV on C.company_id = IV.company_id 
+                                                           group by IV.year")->queryAll();
                 ?>
                 <table  border="0">
                     <tr>
                         <td><label>Company <span style="color:red;">*</span></label></td>
                         <td width="300">
+                            
                             <select id="ratios_company_id" name="ratios_company_id">
-                                    <option value="">Select Company</option>
+                                <option value="">Select Company</option>
                                 
                                 <?php foreach($compaies as $comp):?>
                                 
@@ -102,20 +110,36 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_ratio.JPG', "this is
                                <?php endforeach;?>
                                 
                             </select>
+                            
                             <input type="hidden" name="company_name" value="" id="company_name">
-                        </td> 
+                        </td>
+                    </tr>
+                    <tr>   
+                        <td><label>Year <span style="color:red;">*</span></label></td>
+                        <td width="300">
+                            
+                            <select id="ratios_company_year" name="ratios_company_year">
+                                <option value="">Select Year</option>
+                                
+                                <?php foreach($yearInvolve as $year):?>
+                                
+                                <option value="<?php echo $year["year"];?>"><?php echo $year["year"];?></option>
+                                
+                               <?php endforeach;?>
+                                
+                            </select>
+                        
+                        </td>
 						<td> <button  class="btn btn-warning">Search</button></td>
 						
 						<td> <input style="margin-left: 330px;" type="submit" id="print" value="Print"></td>
                         
-                    </tr>
+                   </tr> 
 
                 </table>
             <?php $this->endWidget(); ?>
             
            
-                <div id="ratio_content"></div>
+                <div align="center" id="ratio_content"></div>
             
 </div>
-
-

@@ -39,10 +39,10 @@ class ReportController extends Controller
                 $company_name = $_REQUEST['company_name'];
                 
                 $years = Yii::app()->db->createCommand("
-                                    select `year` 
+                                    select year 
                                     from tbl_item_value 
-                                    where `company_id` ='".$company_id."' 
-                                    group by `year`")->queryAll();
+                                    where company_id ='".$company_id."' 
+                                    group by year ")->queryAll();
                 
                $total_current_assets = Yii::app()->db->createCommand("
                                     select sum(IV.value) as sum,IV.year 
@@ -506,7 +506,7 @@ class ReportController extends Controller
                         $interes_covers[$j] = ($revenue_cogs
                                                + $total_other_income[$j]['sum'] 
                                                + $profit_from_operation_expenses[$j]['sum'])
-                                               / (-($finance_cost[$j]['sum']));
+                                               / ($finance_cost[$j]['sum']);
                     }
                     else
                     {

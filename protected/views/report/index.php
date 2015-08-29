@@ -28,10 +28,14 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
     <?php $form=$this->beginWidget('CActiveForm', array(
 	'action'=>Yii::app()->createUrl($this->route),
 	'method'=>'post',
-        'id' =>'report_form'
+    'id' =>'report_form'
             )); ?>
+    
                 <?php 
-                $compaies = Yii::app()->db->createCommand("select C.company_id, C.company_name from tbl_registration as C inner join tbl_item_value as IV on C.company_id = IV.company_id group by C.company_id")->queryAll();
+                $compaies = Yii::app()->db->createCommand("select C.company_id, C.company_name 
+                                                           from tbl_registration as C 
+                                                           inner join tbl_item_value as IV on C.company_id = IV.company_id 
+                                                           group by C.company_id")->queryAll();
 
                 ?>
                 <table width="820" border="0">

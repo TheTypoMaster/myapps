@@ -1,6 +1,5 @@
 <?php
 
-
 class RatioController extends Controller
 {
 	public function actionIndex()
@@ -15,6 +14,9 @@ class RatioController extends Controller
            {
                $company_id = $_REQUEST['ratios_company_id'];
                $company_name = $_REQUEST['ratios_company_name'];
+               
+               $year = $_REQUEST['year_report_sheet'];
+               $year_arr = ($year=="")?explode(",", $_REQUEST['years_hide']): array("",$year);
                
 //******************************Formula*******************************************************************************************************
                

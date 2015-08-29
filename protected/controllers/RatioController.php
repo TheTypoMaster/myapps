@@ -12,22 +12,25 @@ class RatioController extends Controller
            $template ="";
            if(isset($_REQUEST['ratios_company_id']))
            {
+               
                $company_id = $_REQUEST['ratios_company_id'];
                $company_name = $_REQUEST['ratios_company_name'];
+               $company_year = $_REQUEST['ratios_company_year'];
                
 //**************************************************************************************************************************************
                
-               $years = Yii::app()->db->createCommand("select `year` 
+               $years = Yii::app()->db->createCommand("select year 
                                                        from tbl_item_value 
-                                                       where `company_id` ='".$company_id."' 
-                                                       group by `year` 
-                                                       order by `year` ")->queryAll();
+                                                       where company_id ='".$company_id."'
+                                                       and year ='".$company_year."'
+                                                       group by year ")->queryAll();
                
                $total_current_assets = Yii::app()->db->createCommand("
                                                         select sum(IV.value) as sum, IV.year 
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."' 
+                                                        where IV.company_id = '".$company_id."'
+                                                        and IV.year ='".$company_year."'
                                                         and I.category = 'CURRENT ASSETS' 
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
@@ -36,7 +39,8 @@ class RatioController extends Controller
                                                         select sum(IV.value) as sum, IV.year 
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."' 
+                                                        where IV.company_id = '".$company_id."'
+                                                        and IV.year ='".$company_year."'
                                                         and I.category = 'NON CURRENT ASSET' 
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
@@ -45,7 +49,8 @@ class RatioController extends Controller
                                                         select sum(IV.value) as sum,IV.year 
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."' 
+                                                        where IV.company_id = '".$company_id."'
+                                                        and IV.year ='".$company_year."'
                                                         and I.category = 'CURRENT LIABILITIES' 
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
@@ -54,7 +59,8 @@ class RatioController extends Controller
                                                         select sum(IV.value) as sum,IV.year 
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."' 
+                                                        where IV.company_id = '".$company_id."'
+                                                        and IV.year ='".$company_year."'
                                                         and I.category = 'NON-CURRENT LIABILITIES' 
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
@@ -64,7 +70,8 @@ class RatioController extends Controller
                                                         select sum(IV.value) as sum, IV.year 
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."' 
+                                                        where IV.company_id = '".$company_id."'
+                                                        and IV.year ='".$company_year."'
                                                         and I.category = 'CURRENT ASSETS'
                                                         and I.name not like '%inventor%'
                                                         and I.name not like '%prepayment%'
@@ -75,7 +82,8 @@ class RatioController extends Controller
                                                         select sum(IV.value) as sum, IV.year 
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."' 
+                                                        where IV.company_id = '".$company_id."'
+                                                        and IV.year ='".$company_year."'
                                                         and I.category = 'COST OF GOOD SOLD' 
                                                         order by I.id, IV.year")->queryAll();
                
@@ -84,7 +92,8 @@ class RatioController extends Controller
                                                         select sum(IV.value) as sum, IV.year 
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."' 
+                                                        where IV.company_id = '".$company_id."'
+                                                        and IV.year ='".$company_year."'
                                                         and I.category = 'FINANCED BY / EQUITY'
                                                         and I.name not like '%minority interest%'
                                                         and I.name not like '%Preference Shares for Shareholders Equity%'
@@ -95,7 +104,8 @@ class RatioController extends Controller
                                                         select sum(IV.value) as sum, IV.year 
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."' 
+                                                        where IV.company_id = '".$company_id."'
+                                                        and IV.year ='".$company_year."'
                                                         and I.category = 'FINANCED BY / EQUITY' 
                                                         order by I.id, IV.year ")->queryAll();
                
@@ -104,7 +114,8 @@ class RatioController extends Controller
                                                         select sum(IV.value) as sum, IV.year
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."' 
+                                                        where IV.company_id = '".$company_id."'
+                                                        and IV.year ='".$company_year."'
                                                         and I.category = 'EXPENSES'
                                                         and I.name not like '%share of%'
                                                         and I.name not like '%finance%' 
@@ -117,7 +128,8 @@ class RatioController extends Controller
                                                         select sum(IV.value) as sum, IV.year
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."' 
+                                                        where IV.company_id = '".$company_id."'
+                                                        and IV.year ='".$company_year."'
                                                         and I.category = 'EXPENSES'
                                                         and I.name not like '%expense%'
                                                         and I.name not like '%interest%'
@@ -129,7 +141,8 @@ class RatioController extends Controller
                                                         select sum(IV.value) as sum, IV.year
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."' 
+                                                        where IV.company_id = '".$company_id."'
+                                                        and IV.year ='".$company_year."'
                                                         and I.category = 'EXPENSES'
                                                         and I.name not like '%expense%'
                                                         and I.name not like '%interest%'
@@ -141,6 +154,7 @@ class RatioController extends Controller
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
                                                         where IV.company_id = '".$company_id."' 
+                                                        and IV.year ='".$company_year."'
                                                         and I.name = 'Revenue' 
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
@@ -149,7 +163,8 @@ class RatioController extends Controller
                                                         select sum(IV.value) as sum, IV.year 
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."' 
+                                                        where IV.company_id = '".$company_id."'
+                                                        and IV.year ='".$company_year."'
                                                         and I.category = 'OTHER INCOME' 
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
@@ -159,6 +174,7 @@ class RatioController extends Controller
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
                                                         where IV.company_id = '".$company_id."'
+                                                        and IV.year ='".$company_year."'
                                                         and I.category = 'EXPENSES' 
                                                         and I.name like '%finance%' 
                                                         group by IV.year 
@@ -167,8 +183,8 @@ class RatioController extends Controller
 
 //**************************************************************************************************************************************
                
-                $template.="<h4><span style='padding-left: 170px;'>RATIO</span></h4>";
-                $template.="<h4><span style='padding-left: 150px;'>COMPANY NAME: ".$company_name." COMPANY ID: ".$company_id."</span></h4>";
+                $template.="<h4><span>RATIO</span></h4>";
+                $template.="<h4><span>COMPANY NAME: ".$company_name."<br/> COMPANY ID: ".$company_id."</span></h4>";
                 $template.="<hr/>";
                 $template .= "<table width='882'>";
                 $template.="<tr>";
@@ -657,7 +673,7 @@ class RatioController extends Controller
                             number_format(($revenue_cogs
                                            + $total_other_income[$j]['sum'] 
                                            + $profit_from_operation_expenses[$j]['sum'])
-                                           / (-($finance_cost[$j]['sum'])), 0, '.', ',').
+                                           / ($finance_cost[$j]['sum']), 0, '.', ',').
                                     "</label></td>";
                     }
                     else
@@ -668,7 +684,8 @@ class RatioController extends Controller
                 $template .="</tr>";
            }
            echo $template;
-        }
+        
+    }
         
 	// Uncomment the following methods and override them if needed
 	/*
