@@ -456,6 +456,7 @@ $('.search-form form').submit(function(){
 });
 ");
 ?>
+
   <div id="dialog-form" title="Create new items">
 <form id="create-dialog-form">
   <fieldset>

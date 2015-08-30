@@ -36,8 +36,7 @@ $this->breadcrumbs=array(
          /* Get some values from elements on the page: */
          var values = $(this).serialize();
          var company_name = $('#ratios_company_id option:selected').text();
-         var year = $('#ratios_company_year option:selected').text();
-         values+='&ratios_company_name='+company_name+'&ratios_company_year='+year;
+         values+='&ratios_company_name='+company_name;
          $('#ratio_content').empty();
          
          $.ajax({
@@ -89,11 +88,6 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_ratio.JPG', "this is
                                                            from tbl_registration as C 
                                                            inner join tbl_item_value as IV on C.company_id = IV.company_id 
                                                            group by C.company_id")->queryAll();
-
-                $yearInvolve = Yii::app()->db->createCommand("select IV.year 
-                                                           from tbl_registration as C 
-                                                           inner join tbl_item_value as IV on C.company_id = IV.company_id 
-                                                           group by IV.year")->queryAll();
                 ?>
                 <table  border="0">
                     <tr>
@@ -115,21 +109,6 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_ratio.JPG', "this is
                         </td>
                     </tr>
                     <tr>   
-                        <td><label>Year <span style="color:red;">*</span></label></td>
-                        <td width="300">
-                            
-                            <select id="ratios_company_year" name="ratios_company_year">
-                                <option value="">Select Year</option>
-                                
-                                <?php foreach($yearInvolve as $year):?>
-                                
-                                <option value="<?php echo $year["year"];?>"><?php echo $year["year"];?></option>
-                                
-                               <?php endforeach;?>
-                                
-                            </select>
-                        
-                        </td>
 						<td> <button  class="btn btn-warning">Search</button></td>
 						
 						<td> <input style="margin-left: 330px;" type="submit" id="print" value="Print"></td>

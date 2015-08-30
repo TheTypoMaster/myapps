@@ -1271,14 +1271,16 @@ class GeneralController extends Controller
                                 from tbl_item as I 
                                 inner join tbl_item_value as IV on I.id = IV.item_id 
                                 where IV.company_id = '".$company_id."' 
-                                and I.category = 'FINANCED BY / EQUITY' 
+                                and I.category = 'FINANCED BY / EQUITY'
+                                and I.name != 'Shareholders Fund'
                                 order by I.id, IV.year ")->queryAll():Yii::app()->db->createCommand("
                                 select I.name,IV.value,IV.year,I.category 
                                 from tbl_item as I 
                                 inner join tbl_item_value as IV on I.id = IV.item_id 
                                 where IV.company_id = '".$company_id."' 
                                 and IV.year='".$year."' 
-                                and I.category = 'FINANCED BY / EQUITY' 
+                                and I.category = 'FINANCED BY / EQUITY'
+                                and I.name != 'Shareholders Fund'
                                 order by I.id")->queryAll();
               
                  if(!empty($finaced_by_or_equity))
