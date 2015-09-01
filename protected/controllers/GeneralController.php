@@ -655,7 +655,8 @@ class GeneralController extends Controller
 //                                                          and I.name = 'Taxation'
 //                                                          and I.category = 'EXPENSES' 
 //                                                          order by IV.year")->queryAll();
-                //$taxions_statitis = array();
+//                $taxions_statitis = array();
+               
                 $expenses_statitis = array();
                 for($j=1;$j<count($year_arr);$j++)
                 {
