@@ -89,15 +89,6 @@ class ReportController extends Controller
                                                         and I.name not like '%prepayment%'
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
-               //dont forget the COGS value          
-               $cost_of_good_sold = Yii::app()->db->createCommand(" 
-                                                        select sum(IV.value) as sum,IV.year 
-                                                        from tbl_item as I 
-                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."'
-                                                        and I.category = 'COST OF GOOD SOLD' 
-                                                        group by IV.year 
-                                                        order by IV.year")->queryAll();
                
                 //i'm getting shareholders fund here.
                 $share_hoder_fund = Yii::app()->db->createCommand(" 
@@ -125,7 +116,8 @@ class ReportController extends Controller
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
                                                         where IV.company_id = '".$company_id."'
-                                                        and I.name = 'Revenue' 
+                                                        and I.category = 'REVENUE' 
+                                                        and I.name like '%Revenue%' 
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
                
@@ -139,56 +131,38 @@ class ReportController extends Controller
                                                         order by IV.year")->queryAll();
                
                //************************************************************************************************************
-               //PROFIT FROM OPERATION, EXPENSES
-               $direct_operating_expenses = Yii::app()->db->createCommand("
-                                                        select IV.value, IV.year
+               //PROFIT FROM OPERATION, TOTAL
+               $total_profit_from_operations = Yii::app()->db->createCommand("
+                                                        select sum(IV.value) as sum, IV.year
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
                                                         where IV.company_id = '".$company_id."'
-                                                        and I.category = 'EXPENSES'
-                                                        and I.name = 'Direct Operating Expenses'
+                                                        and I.main_category = '(LOSS)/PROFIT FROM OPERATIONS'
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
                
-               $administrative_expenses = Yii::app()->db->createCommand("
-                                                        select IV.value, IV.year
-                                                        from tbl_item as I 
-                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."'
-                                                        and I.category = 'EXPENSES'
-                                                        and I.name = 'Administrative Expenses'
-                                                        group by IV.year 
-                                                        order by IV.year")->queryAll();
-               
-               $other_operating_expenses = Yii::app()->db->createCommand("
-                                                        select IV.value, IV.year
-                                                        from tbl_item as I 
-                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."'
-                                                        and I.category = 'EXPENSES'
-                                                        and I.name = 'Other Operating Expenses'
-                                                        group by IV.year 
-                                                        order by IV.year")->queryAll();
                //************************************************************************************************************
                
                //****************************************************************************************************
-               //PROFIT BEFORE TAXATION, EXPENSES 
-               $share_loss_profit_assoc_comp=Yii::app()->db->createCommand("
-                                                        select IV.value, IV.year 
+               //PROFIT BEFORE TAXATION, 
+               
+               //TOTAL 
+               $total_profit_before_taxation=Yii::app()->db->createCommand("
+                                                        select sum(IV.value) as sum, IV.year 
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."'
-                                                        and I.category = 'EXPENSES' 
-                                                        and I.name like '%Share of (loss) profit%' 
+                                                        where IV.company_id = '".$company_id."' 
+                                                        and I.main_category = '(LOSS)/PROFIT BEFORE TAXATION' 
                                                         group by IV.year 
                                                         order by IV.year")->queryAll(); 
-               
+               //EXPENSES
                $finance_cost =Yii::app()->db->createCommand("
                                                         select IV.value, IV.year 
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
                                                         where IV.company_id = '".$company_id."'
-                                                        and I.category = 'EXPENSES' 
+                                                        and I.category = 'EXPENSES'
+                                                        and I.main_category = '(LOSS)/PROFIT BEFORE TAXATION'
                                                         and I.name like '%finance%' 
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
@@ -196,29 +170,44 @@ class ReportController extends Controller
                
                
                //****************************************************************************************************
-               //PROFIT AFTER TAXATION, EXPENSES
-               $taxation_expenses = Yii::app()->db->createCommand("
-                                                        select IV.value, IV.year
+               //PROFIT AFTER TAXATION 
+               //TOTAL
+               $total_profit_after_taxation=Yii::app()->db->createCommand("
+                                                        select sum(IV.value) as sum, IV.year 
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
-                                                        where IV.company_id = '".$company_id."'
-                                                        and I.category = 'EXPENSES'
-                                                        and I.name like '%Tax%'
+                                                        where IV.company_id = '".$company_id."' 
+                                                        and I.main_category = '(LOSS)/PROFIT AFTER TAXATION' 
                                                         group by IV.year 
-                                                        order by IV.year ")->queryAll();
+                                                        order by IV.year")->queryAll(); 
                //****************************************************************************************************
                 
-                $total_expense = Yii::app()->db->createCommand("
-                                                        select sum(IV.value) as sum, IV.year
+                
+               //****************************************************************************************************
+               //PROFIT FOR THE FINANCIAL YEAR 
+               //TOTAL    
+               $total_profit_financial_year = Yii::app()->db->createCommand("
+                                                        select sum(IV.value) as sum, IV.year 
+                                                        from tbl_item as I 
+                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                        where IV.company_id = '".$company_id."' 
+                                                        and I.main_category = 'NET (LOSS)/PROFIT FOR THE FINANCIAL YEAR' 
+                                                        group by IV.year 
+                                                        order by IV.year")->queryAll();
+               //****************************************************************************************************
+                
+               $total_expense=Yii::app()->db->createCommand("
+                                                        select sum(IV.value) as sum, IV.year 
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
                                                         where IV.company_id = '".$company_id."'
                                                         and I.category = 'EXPENSES'
                                                         group by IV.year 
-                                                        order by IV.year ")->queryAll();
+                                                        order by IV.year")->queryAll();
                 
                $revenues = array();
                $expenses = array();
+               $financial_year = array();
                $current_ratios = array();
                $quick_ratios = array();
                $debt_to_equitys = array();
@@ -238,6 +227,7 @@ class ReportController extends Controller
                $gering_ratio_debt_equitys= array();
                $gering_ratio_total_finances = array();
                $interes_covers = array();
+                
                for($j=0;$j<count($years);$j++)
                {
                    if(isset($revenue[$j]['value']))
@@ -248,6 +238,7 @@ class ReportController extends Controller
                    {
                        $revenues[$j] =0;
                    }
+                   
                    if(isset($total_expense[$j]['sum']))
                    {
                        $expenses[$j] = $total_expense[$j]['sum'];
@@ -255,6 +246,18 @@ class ReportController extends Controller
                    else
                    {
                        $expenses[$j] =0;
+                   }
+                   
+                   if(isset($total_profit_from_operations[$j]['sum']))
+                   {
+                       $financial_year[$j] = $total_profit_from_operations[$j]['sum'] 
+                                             + $total_profit_before_taxation[$j]['sum']
+                                             + $total_profit_after_taxation[$j]['sum']
+                                             + $total_profit_financial_year[$j]['sum'];
+                   }
+                   else
+                   {
+                       $financial_year[$j] =0;
                    }
                    
                     if(isset ($total_current_assets[$j]['sum'])&& isset($total_current_liabilities[$j]['sum']) &&
@@ -310,276 +313,118 @@ class ReportController extends Controller
                     
             
                     
-                    //check whether the company have COGS or not
-                    if(isset($revenue[$j]['value']) && $cost_of_good_sold[$j]['sum'] = 'NULL')
+                    if(isset($total_profit_from_operations[$j]['sum']))
                     
                         
-                        $interes_coverages[$j]=($revenue[$j]['value']
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value']
-                                            + $share_loss_profit_assoc_comp[$j]['value']
-                                            + $finance_cost[$j]['value'])
-                                            / $finance_cost[$j]['value'];
-                   
-                   elseif(isset($revenue[$j]['value']) && isset($cost_of_good_sold[$j]['sum']))
-                       
-                       $interes_coverages[$j]=(($revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'])
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value']
-                                            + $share_loss_profit_assoc_comp[$j]['value']
-                                            + $finance_cost[$j]['value'])
-                                            / $finance_cost[$j]['value'];
+                        $interes_coverages[$j]=($total_profit_from_operations[$j]['sum']
+                                           + $total_profit_before_taxation[$j]['sum'])
+                                           / $finance_cost[$j]['value'];
                        
                     else
                        
                         $interes_coverages[$j]=0;
                     
-                    if(isset($revenue[$j]['value']) && $cost_of_good_sold[$j]['sum'] = 'NULL')
+                    if(isset($total_profit_from_operations[$j]['sum']))
                         
-                        $gross_profit_margins[$j]=($revenue[$j]['value']
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value'])
-                                            / ($revenue[$j]['value']
-                                            + $total_other_income[$j]['sum']);
-                   
-                    elseif(isset($revenue[$j]['value']) && isset($cost_of_good_sold[$j]['sum']))
-                       
-                        $gross_profit_margins[$j]=(($revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'])
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value'])
-                                            / ($revenue[$j]['value']
-                                            + $total_other_income[$j]['sum']);
-                   
+                        $gross_profit_margins[$j]=$total_profit_from_operations[$j]['sum']
+                                                  / ($revenue[$j]['value']
+                                                  + $total_other_income[$j]['sum']);
                     else
                        
                         $gross_profit_margins[$j]=0;
                     
-                    if(isset($revenue[$j]['value']) && $cost_of_good_sold[$j]['sum'] = 'NULL')
+                    if(isset($total_profit_from_operations[$j]['sum']))
                         
-                        $net_profit_margins[$j]=($revenue[$j]['value']
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value']
-                                            + $share_loss_profit_assoc_comp[$j]['value']
-                                            + $finance_cost[$j]['value']
-                                            + $taxation_expenses[$j]['value'])
-                                            / ($revenue[$j]['value']
-                                            + $total_other_income[$j]['sum']);
-                   
-                    elseif(isset($revenue[$j]['value']) && isset($cost_of_good_sold[$j]['sum']))
-                        
-                        $net_profit_margins[$j]=(($revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'])
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value']
-                                            + $share_loss_profit_assoc_comp[$j]['value']
-                                            + $finance_cost[$j]['value']
-                                            + $taxation_expenses[$j]['value'])
-                                            / ($revenue[$j]['value']
-                                            + $total_other_income[$j]['sum']);
+                        $net_profit_margins[$j]=($total_profit_from_operations[$j]['sum']
+                                               + $total_profit_before_taxation[$j]['sum']
+                                               + $total_profit_after_taxation[$j]['sum'])
+                                               / ($revenue[$j]['value']
+                                               + $total_other_income[$j]['sum']);
                    
                     else
                         
                         $net_profit_margins[$j]=0;
                     
-                    if(isset($revenue[$j]['value']) && $cost_of_good_sold[$j]['sum'] = 'NULL')
+                    if(isset($total_profit_from_operations[$j]['sum']))
                         
-                        $gross_operating_margins[$j]=($revenue[$j]['value']
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value'])
-                                            / $revenue[$j]['value'];
-                   
-                    elseif(isset($revenue[$j]['value']) && isset($cost_of_good_sold[$j]['sum']))
-                        
-                        $gross_operating_margins[$j]=(($revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'])
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value'])
-                                            / $revenue[$j]['value'];
+                        $gross_operating_margins[$j]=$total_profit_from_operations[$j]['sum']
+                                                    / $revenue[$j]['value'];
                    
                     else
                         
                         $gross_operating_margins[$j]=0;
                     
-                    if(isset($revenue[$j]['value']) && $cost_of_good_sold[$j]['sum'] = 'NULL')
+                    if(isset($total_profit_from_operations[$j]['sum']))
                         
-                        $net_operating_margins[$j]=(($revenue[$j]['value']
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value']
-                                            + $share_loss_profit_assoc_comp[$j]['value']
-                                            + $finance_cost[$j]['value'])
-                                            + $finance_cost[$j]['value'])
-                                            / $revenue[$j]['value'];
-                   
-                   elseif(isset($revenue[$j]['value']) && isset($cost_of_good_sold[$j]['sum']))
-                   
-                       $net_operating_margins[$j]=((($revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'])
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value']
-                                            + $share_loss_profit_assoc_comp[$j]['value']
-                                            + $finance_cost[$j]['value'])
-                                            + $finance_cost[$j]['value'])
-                                            / $revenue[$j]['value'];
-                
-                   else
+                        $net_operating_margins[$j]=($total_profit_from_operations[$j]['sum']
+                                                   + $total_profit_before_taxation[$j]['sum']
+                                                   + $finance_cost[$j]['value'])
+                                                   / $revenue[$j]['value'];
+        
+                    else
                         $net_operating_margins[$j]=0; 
                    
                     
-                    if(isset($revenue[$j]['value']) && $cost_of_good_sold[$j]['sum'] = 'NULL')
+                   if(isset($total_profit_from_operations[$j]['sum']))
                         
-                        $return_on_equities[$j]=($revenue[$j]['value']
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value']
-                                            + $share_loss_profit_assoc_comp[$j]['value']
-                                            + $finance_cost[$j]['value']
-                                            + $taxation_expenses[$j]['value'])
-                                            / $share_hoder_fund[$j]['value'];
+                        $return_on_equities[$j]=($total_profit_from_operations[$j]['sum']
+                                               + $total_profit_before_taxation[$j]['sum']
+                                               + $total_profit_after_taxation[$j]['sum'])
+                                               / $share_hoder_fund[$j]['value'];
                    
-                    elseif(isset($revenue[$j]['value']) && isset($cost_of_good_sold[$j]['sum']))
-                        
-                        $return_on_equities[$j]=(($revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'])
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value']
-                                            + $share_loss_profit_assoc_comp[$j]['value']
-                                            + $finance_cost[$j]['value']
-                                            + $taxation_expenses[$j]['value'])
-                                            / $share_hoder_fund[$j]['value'];
-                
-                    else
+                   else
                         $return_on_equities[$j]=0;
                         
                     
-                    if(isset($revenue[$j]['value']) && $cost_of_good_sold[$j]['sum'] = 'NULL')
+                    if(isset($total_profit_from_operations[$j]['sum']))
                         
-                       $return_on_assets[$j]=(($revenue[$j]['value']
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value']
-                                            + $share_loss_profit_assoc_comp[$j]['value']
-                                            + $finance_cost[$j]['value'])
-                                            + $finance_cost[$j]['value'])
-                                            / ($total_non_current_assets[$j]['sum'] 
-                                            +  $total_current_assets[$j]['sum']);
-                        
-                    elseif(isset($revenue[$j]['value']) && isset($cost_of_good_sold[$j]['sum']))
-                        
-                        $return_on_assets[$j]=((($revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'])
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value']
-                                            + $share_loss_profit_assoc_comp[$j]['value']
-                                            + $finance_cost[$j]['value'])
-                                            + $finance_cost[$j]['value'])
-                                            / ($total_non_current_assets[$j]['sum'] 
-                                            +  $total_current_assets[$j]['sum']);
-                
+                       $return_on_assets[$j]=($total_profit_from_operations[$j]['sum']
+                                               + $total_profit_before_taxation[$j]['sum']
+                                               + $finance_cost[$j]['value'])
+                                               / ($total_non_current_assets[$j]['sum'] 
+                                               +  $total_current_assets[$j]['sum']);
                     else
                        $return_on_assets[$j] =0;
                    
                      
-                     if(isset($revenue[$j]['value']) && $cost_of_good_sold[$j]['sum'] = 'NULL')
+                     if(isset($total_profit_from_operations[$j]['sum']))
                          
-                        $return_on_capital_employeds[$j]=($revenue[$j]['value']
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value'])
-                                            / ($total_non_current_liabilities[$j]['sum']
-                                            +  $share_hoder_equity[$j]['sum']); 
+                        $return_on_capital_employeds[$j]=$total_profit_from_operations[$j]['sum']
+                                                          / ($total_non_current_liabilities[$j]['sum']
+                                                          +  $share_hoder_equity[$j]['sum']); 
                    
-                     elseif(isset($revenue[$j]['value']) && isset($cost_of_good_sold[$j]['sum']))
-                         
-                         $return_on_capital_employeds[$j]=(($revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'])
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value'])
-                                            / ($total_non_current_liabilities[$j]['sum']
-                                            +  $share_hoder_equity[$j]['sum']);
                    
-                     else
-                         
+                     else      
                         $return_on_capital_employeds[$j]=0;
-                     
-                    if(isset($revenue[$j]['value']) && $cost_of_good_sold[$j]['sum'] = 'NULL')
-                        
-                        $earning_per_shares[$j]=($revenue[$j]['value']
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value']
-                                            + $share_loss_profit_assoc_comp[$j]['value']
-                                            + $finance_cost[$j]['value'])
-                                            / $share_hoder_equity[$j]['sum'];
                    
-                    elseif(isset($revenue[$j]['value']) && isset($cost_of_good_sold[$j]['sum']))
+                     
+                    if(isset($total_profit_from_operations[$j]['sum']))
                         
-                        $earning_per_shares[$j]=(($revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'])
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value']
-                                            + $share_loss_profit_assoc_comp[$j]['value']
-                                            + $finance_cost[$j]['value'])
-                                            / $share_hoder_equity[$j]['sum'];
-                       
-                    else
-                        
+                        $earning_per_shares[$j]=($total_profit_from_operations[$j]['sum']
+                                               + $total_profit_before_taxation[$j]['sum'])
+                                               / $share_hoder_equity[$j]['sum'];
+                    else     
                         $earning_per_shares[$j]=0;
+                   
                             
-                    if(isset($revenue[$j]['value']) && $cost_of_good_sold[$j]['sum'] = 'NULL')
+                    if(isset($revenue[$j]['value']))
                         
                         $total_asset_tunovers[$j]=$revenue[$j]['value']
                                           / ($total_non_current_assets[$j]['sum'] 
                                           +  $total_current_assets[$j]['sum']);
                    
-                    elseif(isset($revenue[$j]['value']) && isset($cost_of_good_sold[$j]['sum']))
-                        
-                        $total_asset_tunovers[$j]=($revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'])
-                                            / ($total_non_current_assets[$j]['sum'] 
-                                            +  $total_current_assets[$j]['sum']);
-                       
                     else
                         
-                        $total_asset_tunovers[$j]=0;  
+                        $total_asset_tunovers[$j]=0;
+                   
                     
-                    if(isset($revenue[$j]['value']) && $cost_of_good_sold[$j]['sum'] = 'NULL')
+                    if(isset($revenue[$j]['value']))
                         
                         $fix_asset_tunovers[$j]=$revenue[$j]['value']
-                                            / ($total_non_current_assets[$j]['sum']);
-                   
-                    elseif(isset($revenue[$j]['value']) && isset($cost_of_good_sold[$j]['sum']))
-                        
-                        $fix_asset_tunovers[$j]=($revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'])
-                                            / ($total_non_current_assets[$j]['sum']);
-                        
-                   
+                                               / $total_non_current_assets[$j]['sum'];     
                     else
-                        
                         $fix_asset_tunovers[$j]=0;
+                   
                     
                     if(isset($total_current_liabilities[$j]['sum']) && isset($total_non_current_liabilities[$j]['sum']))
                         
@@ -589,6 +434,7 @@ class ReportController extends Controller
                 
                     else
                         $gering_ratio_debt_equitys[$j]=0;
+                   
                     
                    if(isset($total_current_liabilities[$j]['sum']) && isset($total_non_current_liabilities[$j]['sum']))
                         
@@ -600,25 +446,12 @@ class ReportController extends Controller
                 
                     else
                         $gering_ratio_total_finances[$j]=0;
+                   
                     
-                    if(isset($revenue[$j]['value']) && $cost_of_good_sold[$j]['sum'] = 'NULL')
+                     if(isset($total_profit_from_operations[$j]['sum']))
                         
-                        $interes_covers[$j] = ($revenue[$j]['value']
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value'])
-                                            / $finance_cost[$j]['value'];
-                        
-                    elseif(isset($revenue[$j]['value']) && isset($cost_of_good_sold[$j]['sum']))
-                        
-                        $interes_covers[$j] = (($revenue[$j]['value'] - $cost_of_good_sold[$j]['sum'])
-                                            + $total_other_income[$j]['sum']
-                                            + $direct_operating_expenses[$j]['value']
-                                            + $administrative_expenses[$j]['value']
-                                            + $other_operating_expenses[$j]['value'])
-                                            / $finance_cost[$j]['value'];
-                        
+                        $interes_covers[$j] = $total_profit_from_operations[$j]['sum']
+                                          / $finance_cost[$j]['value'];
                     else
                         $interes_covers[$j] =0;
                     
@@ -627,6 +460,7 @@ class ReportController extends Controller
                     'years' => $years,
                     'revenues' =>$revenues,
                     'expenses' =>$expenses,
+                    'financial_year' =>$financial_year,
                     'current_ratios'=>$current_ratios,
                     'quick_ratios' =>$quick_ratios,
                     'debt_to_equitys' => $debt_to_equitys,

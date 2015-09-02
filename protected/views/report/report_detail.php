@@ -26,8 +26,8 @@ $this->breadcrumbs=array(
         }
         #content-print {
           position: absolute;
-          left: 0;
           top: 0;
+          margin: 25mm 25mm 25mm 25mm;
         }
       }
 </style>
@@ -60,7 +60,9 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
 		
 	
         <td>
-            <h4><span style="padding-left: 15px;" >1. REVENUE VS EXPENSES</span></h4>
+            <h4><span style="padding-left: 15px;" >
+                <center>1. REVENUE VS EXPENSES VS NET (LOSS)/PROFIT FOR<br/> THE FINANCIAL YEAR</center></span>
+            </h4>
             
 			<table class="report_table" border="1" width="489" height="70">
                 <tr>
@@ -69,6 +71,7 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                         $category = "[";
                         $revenue_data ="[";
                         $expense_data ="[";
+                        $financial_year_data ="[";
    
                     ?>
                     <?php foreach ($years as $year ): ?>
@@ -76,12 +79,9 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                     <?php  
                         $category .=$year['year'].",";
                     ?>
-                    
                     <?php endforeach; ?>
                     <?php  
-                    
-                     $category .= "]";
-                    
+                        $category .= "]";
                     ?>
                 </tr>
                 <tr>
@@ -89,25 +89,38 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                     <?php foreach ($revenues as $revenue ):?>
                     <td>
                     <?php 
-                        echo number_format($revenue, 3, '.', ',');
+                        echo number_format($revenue, 0, '.', ',');
                         $revenue_data.=$revenue.",";
                     ?></td>
                     <?php endforeach; ?>
-                 <tr>
+                </tr>
                  <tr>
                     <td>EXPENSES</td>
                     <?php foreach ($expenses as $expense ):?>
-                    <td><?php 
-                        echo  number_format($expense, 3, '.', ',');
+                    <td>
+                        <?php 
+                        echo  number_format($expense, 0, '.', ',');
                         $expense_data.=$expense.",";
-                    ?></td>
+                        ?>
+                    </td>
+                    <?php endforeach; ?>
+                </tr>
+                 <tr>
+                     <td>NET (LOSS)/PROFIT FOR<br/> THE FINANCIAL YEAR</td>
+                    <?php foreach ($financial_year as $fy ):?>
+                    <td>
+                        <?php 
+                        echo  number_format($fy, 0, '.', ',');
+                        $financial_year_data.=$fy.",";
+                        ?>
+                    </td>
                     <?php endforeach; ?>
                     <?php 
                     $revenue_data .="]";
                     $expense_data .="]";
-                    
+                    $financial_year_data.="]";
                     ?>
-                 <tr>                     
+                </tr>                     
             </table>
             <br/>
             
@@ -115,7 +128,6 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
             
             <?php
            
-            
             $option = "{
                     colors: ['#587EBD', '#BF4F4B'],
                     chart: {
@@ -134,7 +146,7 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                         plotBorderWidth: 1    
                     },       
                     'title': {
-                        'text': 'REVENUE VS EXPENSES',
+                        'text': 'REVENUE VS EXPENSES VS NET (LOSS)/PROFIT FOR<br/> THE FINANCIAL YEAR',
                         'x': -20 //center
                     },
 
@@ -164,6 +176,9 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                         }, {
                         'name': 'EXPENSES',
                         'data': ".$expense_data."
+                        },{
+                        'name': 'NET (LOSS)/PROFIT FOR<br/> THE FINANCIAL YEAR',
+                        'data': ".$financial_year_data."
                         }]
                     }";
             $this->Widget('ext.highcharts.HighchartsWidget', array(
@@ -204,21 +219,21 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                     <td><?php echo number_format($item, 3, '.', ',');?></td>
                     <?php $current_ratios_data.=$item.","; ?>
                     <?php endforeach;?>
-                 <tr>
+                </tr>
                  <tr>
                     <td>QUICK RATIO</td>
                    <?php foreach ($quick_ratios as $item ): ?>
                     <td><?php echo number_format($item, 3, '.', ',');?></td>
                     <?php $quick_ratios_data.=$item.","; ?>
                     <?php endforeach;?>
-                 <tr>  
+                </tr>  
                   <tr>
                     <td>DEBT-TO-EQUITY</td>
                    <?php foreach ($debt_to_equitys as $item ): ?>
                     <td><?php echo number_format($item, 3, '.', ',');?></td>
                     <?php $debt_to_equitys_data.=$item.","; ?>
                     <?php endforeach;?>
-                 <tr>  
+                  </tr>  
                  <tr>
                     <td>DEBT-TO-TOTAL-ASSETS</td>
                    
@@ -226,14 +241,14 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                     <td><?php echo number_format($item, 3, '.', ',');?></td>
                     <?php $debt_to_total_assets_data.=$item.","; ?>
                     <?php endforeach;?>
-                 <tr> 
+                  </tr>
                  <tr>
                     <td>TOTAL CAPITALISATION</td>
                    <?php foreach ($total_capitalisaions as $item ): ?>
                     <td><?php echo number_format($item, 3, '.', ',');?></td>
                     <?php $total_capitalisaions_data.=$item.","; ?>
                     <?php endforeach;?>
-                 <tr>                      
+                  </tr>                      
             </table>
             <br/>
            
@@ -337,7 +352,7 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                     <td><?php echo number_format($item, 3, '.', ',');?></td>
                     <?php $debt_to_equitys_data.=$item.",";?>
                     <?php endforeach;?>
-                 <tr>
+                </tr>
                  <tr>
                     
                     <td>DEBT-TO-TOTAL-ASSETS</td>
@@ -345,14 +360,14 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                     <td><?php echo number_format($item, 3, '.', ',');?></td>
                     <?php $debt_to_total_assets_data.=$item.",";?>
                     <?php endforeach;?>
-                 <tr> 
+                </tr> 
                  <tr>
                     <td>TOTAL CAPITALISATION</td>
                    <?php foreach ($total_capitalisaions as $item ): ?>
                     <td><?php echo number_format($item, 3, '.', ',');?></td>
                     <?php $total_capitalisaions_data.=$item.",";?>
                     <?php endforeach;?>
-                 <tr>                       
+                </tr>                       
             </table>
             <br/>
             
@@ -446,31 +461,31 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                    <?php foreach ($interes_coverages as $item ): ?>
                     <td><?php echo number_format($item, 2, '.', ',');?></td>
                     <?php endforeach;?>
-                 <tr>
+                  </tr>
                  <tr>
                     <td>GROSS PROFIT MARGIN</td>
                    <?php foreach ($gross_profit_margins as $item ): ?>
                     <td><?php echo number_format($item, 2, '.', ',');?></td>
                     <?php endforeach;?>
-                 <tr> 
+                 </tr>
                   <tr>
                     <td>NET PROFIT MARGIN</td>
                    <?php foreach ($net_profit_margins as $item ): ?>
                     <td><?php echo number_format($item, 2, '.', ',');?></td>
                     <?php endforeach;?>
-                 <tr> 
+                  </tr>
                  <tr>
                     <td>GROSS OPERATING MARGIN</td>
                    <?php foreach ($gross_operating_margins as $item ): ?>
                     <td><?php echo number_format($item, 2, '.', ',');?></td>
                     <?php endforeach;?>
-                 <tr> 
+                 </tr> 
                  <tr>
                     <td>NET OPERATING MARGIN</td>
                    <?php foreach ($net_operating_margins as $item ): ?>
                     <td><?php echo number_format($item, 2, '.', ',');?></td>
                     <?php endforeach;?>
-                 <tr>                      
+                  </tr>                     
             </table>
             <br/>
            
@@ -556,25 +571,25 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                    <?php foreach ($return_on_equities as $item ): ?>
                     <td><?php echo number_format($item, 2, '.', ',');?></td>
                     <?php endforeach;?>
-                 <tr>
+                  </tr>
                  <tr>
                     <td>RETURN ON ASSETS (ROA)</td>
                    <?php foreach ($return_on_assets as $item ): ?>
                     <td><?php echo number_format($item, 2, '.', ',');?></td>
                     <?php endforeach;?>
-                 <tr>  
+                  </tr>  
                  <tr>
                     <td>RETURN ON CAPITAL EMPLOYED(ROCE)</td>
                    <?php foreach ($return_on_capital_employeds as $item ): ?>
                     <td><?php echo number_format($item, 2, '.', ',');?></td>
                     <?php endforeach;?>
-                 <tr>                     
+                 </tr>                    
                  <tr>
                     <td>EARNING PER SHARE</td>
                    <?php foreach ($earning_per_shares as $item ): ?>
                     <td><?php echo number_format($item, 2, '.', ',');?></td>
                     <?php endforeach;?>
-                 <tr>                      
+                  </tr>                     
             </table>
             <br/>
            
@@ -657,13 +672,13 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                    <?php foreach ($total_asset_tunovers as $item ): ?>
                     <td><?php echo number_format($item, 2, '.', ',');?></td>
                     <?php endforeach;?>
-                 <tr>
+                </tr>
                  <tr>
                     <td>FIXED ASSET TURNOVER</td>
                      <?php foreach ($fix_asset_tunovers as $item ): ?>
                     <td><?php echo number_format($item, 2, '.', ',');?></td>
                     <?php endforeach;?>
-                 <tr>                     
+                 </tr>                    
             </table>
            
         </br>
@@ -739,19 +754,19 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_report.JPG', "this i
                      <?php foreach ($gering_ratio_debt_equitys as $item ): ?>
                     <td><?php echo number_format($item, 2, '.', ',');?></td>
                     <?php endforeach;?>
-                 <tr>
+                  </tr>
                  <tr>
                     <td>GEARING RATIO (DEBT/DEBT+EQUITY)</td>
                      <?php foreach ($gering_ratio_total_finances as $item ): ?>
                     <td><?php echo number_format($item, 2, '.', ',');?></td>
                     <?php endforeach;?>
-                 <tr>  
+                  </tr> 
                  <tr>
                     <td>INTEREST COVER</td>
                      <?php foreach ($interes_covers as $item ): ?>
                     <td><?php echo number_format($item, 0, '.', ',');?></td>
                     <?php endforeach;?>
-                 <tr>                      
+                 </tr>                     
             </table>
            
         </br>

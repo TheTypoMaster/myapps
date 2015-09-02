@@ -28,10 +28,10 @@ class Item extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('isMandatory', 'numerical', 'integerOnly'=>true),
-			array('name, category', 'length', 'max'=>255),
+			array('name, category, main_category', 'length', 'max'=>255),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, name, category, isMandatory', 'safe', 'on'=>'search'),
+			array('id, name, category, main_category, isMandatory', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -55,6 +55,7 @@ class Item extends CActiveRecord
 			'id' => 'ID',
 			'name' => 'Name',
 			'category' => 'Category',
+            'main_category' => 'Main Category'
 			'isMandatory' => 'Is Mandatory',
 		);
 	}
@@ -80,6 +81,7 @@ class Item extends CActiveRecord
 		$criteria->compare('id',$this->id);
 		$criteria->compare('name',$this->name,true);
 		$criteria->compare('category',$this->category,true);
+        $criteria->compare('main_category',$this->main_category,true);
 		$criteria->compare('isMandatory',$this->isMandatory);
 
 		return new CActiveDataProvider($this, array(

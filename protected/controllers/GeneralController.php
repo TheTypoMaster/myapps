@@ -378,10 +378,9 @@ class GeneralController extends Controller
                 $company_id= $_REQUEST['Company_report_sheet'];
                 $company_name = $_REQUEST['Company_report_sheet_name'];
                 $year = $_REQUEST['year_report_sheet'];
-                 $year_arr = ($year=="")?explode(",", $_REQUEST['years_hide']): array("",$year);
+                $year_arr = ($year=="")?explode(",", $_REQUEST['years_hide']): array("",$year);
                 
-               /*Income sheet template*/
-                    
+                   
                 $template.="<h4><span style='padding-left: 152px;'>STATEMENT OF FINANCIAL PERFORMANCE / INCOME STATEMENT</span></h4>";
                 $template.="<h4><span style='padding-left: 167px;'>COMPANY NAME: ".$company_name." COMPANY ID: ".$company_id."</span></h4>";
                 $template.="<hr/>";
@@ -623,17 +622,14 @@ class GeneralController extends Controller
                  }
                
                //**************************************************************************************************************
-               //PROFIT FROM OPERATIONS Restricting string like share of and costs 
+               //PROFIT FROM OPERATIONS
                 $expenses = ($year =="")?Yii::app()->db->createCommand("
                                 select IV.item_id, I.name,IV.value,IV.year 
                                 from tbl_item as I 
                                 inner join tbl_item_value as IV on I.id = IV.item_id 
                                 where IV.company_id = '".$company_id."' 
                                 and I.category = 'EXPENSES'
-                                and I.name not like '%share of%'
-                                and I.name not like '%cost%'
-                                and I.name not like '%tax%'
-                                and I.name not like '%interest%'
+                                and I.main_category = '(LOSS)/PROFIT FROM OPERATIONS'
                                 order by I.id, IV.year ")->queryAll():Yii::app()->db->createCommand("
                                 select I.name,IV.value,IV.year,I.category 
                                 from tbl_item as I 
@@ -641,21 +637,8 @@ class GeneralController extends Controller
                                 where IV.company_id = '".$company_id."' 
                                 and IV.year='".$year."' 
                                 and I.category = 'EXPENSES'
-                                and I.name not like '%share of%'
-                                and I.name not like '%cost%'
-                                and I.name not like '%tax%'
-                                and I.name not like '%interest%'
+                                and I.main_category = '(LOSS)/PROFIT FROM OPERATIONS'
                                 order by I.id")->queryAll();
-               
-//                TAXATION
-//                $taxions = Yii::app()->db->createCommand("select IV.item_id, I.name,IV.value,IV.year 
-//                                                          from tbl_item as I 
-//                                                          inner join tbl_item_value as IV on I.id = IV.item_id 
-//                                                          where IV.company_id = '".$company_id."' 
-//                                                          and I.name = 'Taxation'
-//                                                          and I.category = 'EXPENSES' 
-//                                                          order by IV.year")->queryAll();
-//                $taxions_statitis = array();
                
                 $expenses_statitis = array();
                 for($j=1;$j<count($year_arr);$j++)
@@ -728,16 +711,14 @@ class GeneralController extends Controller
                    //*******************************************************************************************************
                
                    //*******************************************************************************************************
-                   //PROFIT BEFORE TAXATION only allow for string like share of and costs but not expenses and tax
+                   //PROFIT BEFORE TAXATION
                     $expensesBT = ($year =="")?Yii::app()->db->createCommand("
                                 select IV.item_id, I.name,IV.value,IV.year 
                                 from tbl_item as I 
                                 inner join tbl_item_value as IV on I.id = IV.item_id 
                                 where IV.company_id = '".$company_id."' 
                                 and I.category = 'EXPENSES'
-                                and I.name not like '%expense%'
-                                and I.name not like '%interest%'
-                                and I.name not like '%tax%'
+                                and I.main_category = '(LOSS)/PROFIT BEFORE TAXATION'
                                 order by I.id, IV.year ")->queryAll():Yii::app()->db->createCommand("
                                 select I.name,IV.value,IV.year,I.category 
                                 from tbl_item as I 
@@ -745,9 +726,7 @@ class GeneralController extends Controller
                                 where IV.company_id = '".$company_id."' 
                                 and IV.year='".$year."' 
                                 and I.category = 'EXPENSES'
-                                and I.name not like '%expense%'
-                                and I.name not like '%interest%'
-                                and I.name not like '%tax%'
+                                and I.main_category = '(LOSS)/PROFIT BEFORE TAXATION'
                                 order by I.id")->queryAll();
                     
                     $expensesBT_statitis = array();
@@ -808,17 +787,14 @@ class GeneralController extends Controller
                     //*******************************************************************************************************
                
                    //*******************************************************************************************************
-                   //PROFIT AFTER TAXATION only allow for string like TAX but not expenses, share of, cost, interests
+                   //PROFIT AFTER TAXATION
                     $expensesAT = ($year =="")?Yii::app()->db->createCommand("
                                 select IV.item_id, I.name,IV.value,IV.year 
                                 from tbl_item as I 
                                 inner join tbl_item_value as IV on I.id = IV.item_id 
                                 where IV.company_id = '".$company_id."' 
                                 and I.category = 'EXPENSES'
-                                and I.name not like '%expense%'
-                                and I.name not like '%interest%'
-                                and I.name not like '%share of%'
-                                and I.name not like '%cost%'
+                                and I.main_category = '(LOSS)/PROFIT AFTER TAXATION'
                                 order by I.id, IV.year ")->queryAll():Yii::app()->db->createCommand("
                                 select I.name,IV.value,IV.year,I.category 
                                 from tbl_item as I 
@@ -826,10 +802,7 @@ class GeneralController extends Controller
                                 where IV.company_id = '".$company_id."' 
                                 and IV.year='".$year."' 
                                 and I.category = 'EXPENSES'
-                                and I.name not like '%expense%'
-                                and I.name not like '%interest%'
-                                and I.name not like '%share of%'
-                                and I.name not like '%cost%'
+                                and I.main_category = '(LOSS)/PROFIT AFTER TAXATION'
                                 order by I.id")->queryAll();
                     
                     $expensesAT_statitis = array();
@@ -890,17 +863,14 @@ class GeneralController extends Controller
                    //*******************************************************************************************************
                     
                    //*******************************************************************************************************
-                    //PROFIT FOR THE FINANCIAL YEAR only allow for string like interest but not expenses, share of, cost, tax
+                    //PROFIT FOR THE FINANCIAL YEAR
                     $expensesFY = ($year =="")?Yii::app()->db->createCommand("
                                 select IV.item_id, I.name,IV.value,IV.year 
                                 from tbl_item as I 
                                 inner join tbl_item_value as IV on I.id = IV.item_id 
                                 where IV.company_id = '".$company_id."' 
                                 and I.category = 'EXPENSES'
-                                and I.name not like '%expense%'
-                                and I.name not like '%tax%'
-                                and I.name not like '%share of%'
-                                and I.name not like '%cost%'
+                                and I.main_category = 'NET (LOSS)/PROFIT FOR THE FINANCIAL YEAR'
                                 order by I.id, IV.year ")->queryAll():Yii::app()->db->createCommand("
                                 select I.name,IV.value,IV.year,I.category 
                                 from tbl_item as I 
@@ -908,10 +878,7 @@ class GeneralController extends Controller
                                 where IV.company_id = '".$company_id."' 
                                 and IV.year='".$year."' 
                                 and I.category = 'EXPENSES'
-                                and I.name not like '%expense%'
-                                and I.name not like '%tax%'
-                                and I.name not like '%share of%'
-                                and I.name not like '%cost%'
+                                and I.main_category = 'NET (LOSS)/PROFIT FOR THE FINANCIAL YEAR'
                                 order by I.id")->queryAll();
                     
                     $expensesFY_statitis = array();
@@ -1415,25 +1382,6 @@ class GeneralController extends Controller
                     $template.="</tr>";
                     //*********************************************************************************************
   
-//                    $template.="<tr>";
-//                    $template.="<td colspan='".count($year_arr)."'><hr/></td>";
-//                    $template.="</tr>";
-//                    $template.="<tr>";
-//                    $template.="<td>This value refer to?????</td>";
-//                    for($j=1;$j<count($year_arr);$j++)
-//                    {
-//                        $template.= "<td valign='center'><h5>".
-//                            number_format($non_current_asset_statitis[$year_arr[$j]] 
-//                                          + $current_asset_statitis[$year_arr[$j]] 
-//                                          + $current_liabilities_statitis[$year_arr[$j]]).
-//                                    "</h5></td>";
-//                    }
-//                     
-//                    $template.="</tr>";
-//                    $template.="<tr>";
-//                    $template.="<td colspan='".count($year_arr)."'><hr/></td>";
-//                    $template.="</tr>";
-                    
                  }
                 
                
@@ -1462,7 +1410,7 @@ class GeneralController extends Controller
                                                         or IV.year is null)
                                                         group by I.name
                                                         order by (
-                                                            case category 
+                                                            case I.category 
                                                             when 'NON CURRENT ASSET' then 0
                                                             when 'CURRENT ASSET' then 1
                                                             when 'CURRENT LIABILITIES' then 2
@@ -1485,7 +1433,7 @@ class GeneralController extends Controller
                                                         where SI.company_id ='".$company_id."'
                                                         group by I.name
                                                         order by (
-                                                            case category 
+                                                            case I.category 
                                                             when 'NON CURRENT ASSET' then 0
                                                             when 'CURRENT ASSET' then 1
                                                             when 'CURRENT LIABILITIES' then 2
@@ -1505,7 +1453,7 @@ class GeneralController extends Controller
                 
                 if(empty($rows))
                 {
-                    $rows = Yii::app()->db->createCommand("select id, name, category, isMandatory, 0 as value 
+                    $rows = Yii::app()->db->createCommand(" select id, name, category, main_category, isMandatory, 0 as value 
                                                             from tbl_item 
                                                             where isMandatory = 1 
                                                             order by (
@@ -1534,6 +1482,7 @@ class GeneralController extends Controller
                     foreach($rows as $row)
                     {
                          $next_category =$row["category"];
+                         
                          if($next_category!=$category)
                          {
                              $result.="<tr><td><h5>".$next_category."</h5></td></tr>";
@@ -1886,6 +1835,7 @@ class GeneralController extends Controller
 		$this->render('generalLedger');
 	}
     
+    //**********************************--addmoreitem from create dialog form---******************************
     public function actionAddMoreItem()
 	{
             if(isset($_REQUEST["category_item"])&& $_REQUEST["category_item"]!=""){
@@ -1894,12 +1844,14 @@ class GeneralController extends Controller
                     $item->isMandatory = false;
                     $item->name = $_REQUEST["item-name"];
                     $item->category = $_REQUEST["category_item"];
+                    $item->main_category = $_REQUEST["main_category_item"];
                     $item->insert();
                     echo $item->id;
                     
             }
             
 	}
+    //********************************************************************************************************
     
     /**
     * Catching select Year event, and check data of year is exits;
@@ -1957,6 +1909,7 @@ class GeneralController extends Controller
                     }
             }
     }
+    
     public function actionSelectLegerItem()
     {
             if(isset($_POST["select_leger_items_company_name"])&& $_POST["select_leger_items_company_name"]!="")
@@ -2005,18 +1958,19 @@ class GeneralController extends Controller
             if(isset($_POST["General_company_name"])&& $_POST["General_company_name"]!="")
                 {
                   
-                   $company_id = $_REQUEST["General_company_name"];
+                    $company_id = $_REQUEST["General_company_name"];
                     $company_name = $_REQUEST["company_name"];
                     $year = $_REQUEST["year"];
                     
                     $general = General::model()->findByPk($id);
+                
                     if(!isset($general))
                         $general = new General();
-                    $general->company_id = $company_id;
-                    $general->company_name = $company_name;
-                    $general->year = $year;
-                    $general->save();
-                    $ret = ItemValue::model()->deleteAll("company_id ='".$company_id."' and year ='".$year."'");
+                        $general->company_id = $company_id;
+                        $general->company_name = $company_name;
+                        $general->year = $year;
+                        $general->save();
+                        $ret = ItemValue::model()->deleteAll("company_id ='".$company_id."' and year ='".$year."'");
                    
                     foreach($_POST as $key => $value)
                     {

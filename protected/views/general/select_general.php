@@ -102,10 +102,13 @@ $this->breadcrumbs=array(
       
          return false;
     });
+      
+      
  $(".del").click(function(event) {
         
             
-              var result = confirm("Are you sure to delete this item?");
+        var result = confirm("Are you sure to delete this item?");
+     
         if (result==false) {
            return false;
         }
@@ -152,39 +155,67 @@ $this->breadcrumbs=array(
           case "btn_non_cureent_asset":
               $("#category_item").val("NON CURRENT ASSET");
               break;
+                
           case "btn_cureent_asset":
               $("#category_item").val("CURRENT ASSETS");
-              
                break; 
+                
           case 'btn_cureent_liabilities':
               $('#category_item').val("CURRENT LIABILITIES");
               break;
+                
           case 'btn_no_cureent_liabilities':
               $('#category_item').val("NON-CURRENT LIABILITIES");
               break;
+                
           case 'btn_financed_by_equity':
               $('#category_item').val("FINANCED BY / EQUITY");
                break;
+                
           case 'btn_revenue':
               $('#category_item').val("REVENUE");
-              break;
+              $('#main_category_item').val("(LOSS)/PROFIT FROM OPERATIONS");
+          break;
+                
           case 'btn_cost_of_good_sold':
               $('#category_item').val("COST OF GOOD SOLD");
-              break;
+              $('#main_category_item').val("(LOSS)/PROFIT FROM OPERATIONS");
+          break;
+                
           case 'btn_other_imcome':
               $('#category_item').val("OTHER INCOME");
-               break;
+              $('#main_category_item').val("(LOSS)/PROFIT FROM OPERATIONS");  
+          break;
+                
           case 'btn_expenses':
               $('#category_item').val("EXPENSES");
-               break;
+              $('#main_category_item').val("(LOSS)/PROFIT FROM OPERATIONS");
+          break;
+                
+          case 'btn_expensesBT':
+              $('#category_item').val("EXPENSES");
+              $('#main_category_item').val("(LOSS)/PROFIT BEFORE TAXATION");
+          break;
+                
+          case 'btn_expensesAT':
+              $('#category_item').val("EXPENSES");
+              $('#main_category_item').val("(LOSS)/PROFIT AFTER TAXATION");
+          break;
+                
+          case 'btn_expensesFY':
+              $('#category_item').val("EXPENSES");
+              $('#main_category_item').val("NET (LOSS)/PROFIT FOR THE FINANCIAL YEAR");
+          break;
+                
            case 'btn_cash_flow_from_operating':
               $('#category_item').val("CASH FLOW FROM OPERATING ACTIVITIES");
               break; 
+                
            case 'btn_cash_flow_from_investing':
               $('#category_item').val("CASH FLOW FROM INVESTING ACTIVITIES");
               break;
+                
            case 'btn_net_cash_inflow_from_finnancing_activities':
-            
               $('#category_item').val("NET CASH INFLOW FROM FINANCING ACTIVITIES");
               break;             
         }
@@ -351,6 +382,9 @@ $this->breadcrumbs=array(
         }
     });
 });
+      
+      
+//*********************************************This is for the dialog form*********************************************
    $("#create-dialog-form").submit(function(event) {
 
     /* Stop form from submitting normally */
@@ -361,8 +395,10 @@ $this->breadcrumbs=array(
 
     /* Get some values from elements on the page: */
     var values = $(this).serialize();
+    var main_category = $("#main_category_item").val();
     var category = $("#category_item").val();
     var itemName = $("#item-name").val();
+    
     /* Send the data using post and put the results in a div */
     $.ajax({
         url: "addmoreitem",
@@ -372,44 +408,91 @@ $this->breadcrumbs=array(
             $( "#dialog-form" ).dialog( "close" );
             var base_url = "<?php echo Yii::app()->getBaseUrl();?>";
             var edit_del = "&nbsp;&nbsp;<img class=del id=del_"+data+" src="+base_url+"/images/icon-delete_13.png />";
+            
             switch (category) {
+                    
                case 'NON CURRENT ASSET':  
                    $( "#btn_non_cureent_asset" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName + edit_del +'</label>' );
                    break;
+                    
                case 'CURRENT ASSETS':  
                    $( "#btn_cureent_asset" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName + edit_del + '</label>' );
                    break;  
+                    
                case 'CURRENT LIABILITIES':  
                    $( "#btn_cureent_liabilities" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>');
                    break; 
+                    
                case 'NON-CURRENT LIABILITIES': 
-               
                    $( "#btn_no_cureent_liabilities" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>' );
                    break; 
+                    
                case 'FINANCED BY / EQUITY':  
                    $( "#btn_financed_by_equity" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>' );
                    break; 
-               case 'REVENUE':  
-                   $( "#btn_revenue" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>' );
-                   break; 
-               case 'COST OF GOOD SOLD':  
-                   $( "#btn_cost_of_good_sold" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>' );
-                   break;  
-               case 'OTHER INCOME':  
-                   $( "#btn_other_imcome" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>' );
-                   break;
-               case 'EXPENSES':  
-                   $( "#btn_expenses" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>' );
-                   break;
+               
+               case 'REVENUE':
+                    if(main_category == '(LOSS)/PROFIT FROM OPERATIONS')
+                    {
+                                        $( "#btn_revenue" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>' );
+                        
+                    }
+               break; 
+                    
+               case 'COST OF GOOD SOLD':
+                    
+                    if(main_category == '(LOSS)/PROFIT FROM OPERATIONS')
+                    {
+                    
+                            $( "#btn_cost_of_good_sold" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>' );
+                    }
+                    
+               break;
+                    
+               case 'OTHER INCOME':
+                    
+                    if(main_category == '(LOSS)/PROFIT FROM OPERATIONS')
+                    {
+                    
+                            $( "#btn_other_imcome" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>' );
+                    }
+                    
+               break;
+                    
+               case 'EXPENSES':
+                    
+                    if(main_category == '(LOSS)/PROFIT FROM OPERATIONS')
+                    {
+                            $( "#btn_expenses" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>' );
+                    }
+                    else if(main_category == '(LOSS)/PROFIT BEFORE TAXATION'){
+                             $( "#btn_expensesBT" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>' );
+                        
+                    }
+                    else if(main_category == '(LOSS)/PROFIT AFTER TAXATION'){
+                             $( "#btn_expensesAT" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>' );
+                        
+                    }
+                    else if(main_category == 'NET (LOSS)/PROFIT FOR THE FINANCIAL YEAR'){
+                             $( "#btn_expensesFY" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>' );
+                        
+                    }
+                    
+               break;
+              
+                    
                case 'CASH FLOW FROM OPERATING ACTIVITIES':  
                    $( "#btn_cash_flow_from_operating" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>' );
                    break;  
+                    
                case 'CASH FLOW FROM INVESTING ACTIVITIES':  
                    $( "#btn_cash_flow_from_investing" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>' );
                    break; 
+                    
                case 'NET CASH INFLOW FROM FINANCING ACTIVITIES':  
                    $( "#btn_net_cash_inflow_from_finnancing_activities" ).before( '<label><input type="checkbox" name="item'+data+'" value="'+data+'"/>&nbsp;&nbsp;'+itemName+ edit_del+'</label>' );
-                   break;                        
+                   break;   
+                    
             }
             
         },
@@ -419,7 +502,8 @@ $this->breadcrumbs=array(
             //$("#result").html('There is error while submit');
         }
     });
-}); 
+});
+//*************************************************************************************************************************************
  
  
         
@@ -466,7 +550,7 @@ $('.search-form form').submit(function(){
            <option value="CURRENT ASSETS">CURRENT ASSETS</option>
            <option value="CURRENT LIABILITIES">CURRENT LIABILITIES</option>
            <option value="FINANCED BY / EQUITY">FINANCED BY / EQUITY</option>
-           <option value="NON-CURRENT LIABILITIES">NO CURRENT LIABILITIES</option>
+           <option value="NON-CURRENT LIABILITIES">NON-CURRENT LIABILITIES</option>
            <option value="REVENUE">REVENUE</option>
            <option value="COST OF GOOD SOLD">COST OF GOOD SOLD</option>
            <option value="OTHER INCOME">OTHER INCOME</option>
@@ -475,6 +559,18 @@ $('.search-form form').submit(function(){
            <option value="CASH FLOW FROM INVESTING ACTIVITIES">CASH FLOW FROM INVESTING ACTIVITIES</option>
            <option value="NET CASH INFLOW FROM FINANCING ACTIVITIES">NET CASH INFLOW FROM FINANCING ACTIVITIES</option>
      </select>
+      
+      <label for="name">Select Main Category</label>
+      <font color="red">**Ignore if unnecessary</font>
+      <select id="main_category_item" name="main_category_item">
+           <option value=""></option>
+           <option value="(LOSS)/PROFIT FROM OPERATIONS">(LOSS)/PROFIT FROM OPERATIONS</option>
+           <option value="(LOSS)/PROFIT BEFORE TAXATION">(LOSS)/PROFIT BEFORE TAXATION</option>
+           <option value="(LOSS)/PROFIT AFTER TAXATION">(LOSS)/PROFIT AFTER TAXATION</option>
+           <option value="NET (LOSS)/PROFIT FOR THE FINANCIAL YEAR">NET (LOSS)/PROFIT FOR THE FINANCIAL YEAR</option>
+      </select>
+      
+      
     <label for="email">Item name</label>
     <input type="text" name="item-name" id="item-name" value="" class="text ui-widget-content ui-corner-all">
     <button id="create-item" class="btn btn-warning">Create item</button>
@@ -683,78 +779,262 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_general.JPG', "this 
                 </div>
                  
             </td>
+         
+         
+         
+         
             <td valign="top">
                  <?php
-                    $revenue = Yii::app()->db->createCommand("select * from tbl_item where `category`='REVENUE'")->queryAll();
-                ?>
+                    $revenue = Yii::app()->db->createCommand("select * 
+                                                              from tbl_item 
+                                                              where category='REVENUE'
+                                                              and main_category='(LOSS)/PROFIT FROM OPERATIONS'
+                                                              ")->queryAll();
+                  ?>
+                
+            
                 <div class="item_panel">
+                    <h4>(LOSS)/PROFIT FROM OPERATIONS</h4>
+                    
                     <h5>REVENUE</h5>
                     
                     <?php foreach ($revenue as $item): ?>
                         <?php if($item['isMandatory']== true):?>
-                            <label class="blue"><input checked="true" type="checkbox" name ="<?php echo "item".$item['id'];?>" id="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;<?php echo $item['name'];?></label>  
+                            <label class="blue">
+                                <input checked="true" type="checkbox" name ="<?php echo "item".$item['id'];?>" 
+                                       id="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;
+                                <?php echo $item['name'];?>
+                            </label>  
                         <?php else:?>
-                            <label><input type="checkbox" name="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;<?php echo $item['name'];?>&nbsp;&nbsp;<img class="del"  id="<?php echo "del_".$item['id'];?>" src="<?php echo Yii::app()->getBaseUrl();?>/images/icon-delete_13.png" /></label>
+                    
+                            <label>
+                                <input type="checkbox" 
+                                       name="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;
+                                <?php echo $item['name'];?>&nbsp;&nbsp;
+                                <img class="del"  id="<?php echo "del_".$item['id'];?>" 
+                                     src="<?php echo Yii::app()->getBaseUrl();?>/images/icon-delete_13.png" />
+                            </label>
+                    
                         <?php endif;?>
                     <?php endforeach;?>
                    
-                    <img id="btn_revenue" class="create-item" src="<?php echo Yii::app()->getBaseUrl(true)?>/images/addmore.png" alt="Add more" />
+                    <img id="btn_revenue" class="create-item" 
+                         src="<?php echo Yii::app()->getBaseUrl(true)?>/images/addmore.png" alt="Add more" />
                 </div>
                  
                 <?php
-                    $cost_of_good_sold = Yii::app()->db->createCommand("select * from tbl_item where `category`='COST OF GOOD SOLD'")->queryAll();
+                    $cost_of_good_sold = Yii::app()->db->createCommand("select * 
+                                                                        from tbl_item 
+                                                                        where category='COST OF GOOD SOLD'
+                                                                        and main_category='(LOSS)/PROFIT FROM OPERATIONS'
+                                                                        ")->queryAll();
                 ?>
                 <div class="item_panel">
                     <h5>COST OF GOOD SOLD</h5>
                     
                     <?php foreach ($cost_of_good_sold as $item): ?>
                         <?php if($item['isMandatory']== true):?>
-                            <label class="blue"><input checked="true" type="checkbox" name ="<?php echo "item".$item['id'];?>" id="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;<?php echo $item['name'];?></label>  
+                            <label class="blue">
+                                <input checked="true" type="checkbox" 
+                                       name ="<?php echo "item".$item['id'];?>" 
+                                       id="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;
+                                <?php echo $item['name'];?></label>  
                         <?php else:?>
-                            <label><input type="checkbox" name="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;<?php echo $item['name'];?>&nbsp;&nbsp;<img class="del"  id="<?php echo "del_".$item['id'];?>" src="<?php echo Yii::app()->getBaseUrl();?>/images/icon-delete_13.png" /></label>
+                            <label>
+                                <input type="checkbox" 
+                                       name="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;
+                                <?php echo $item['name'];?>&nbsp;&nbsp;
+                                <img class="del"  id="<?php echo "del_".$item['id'];?>" 
+                                     src="<?php echo Yii::app()->getBaseUrl();?>/images/icon-delete_13.png" />
+                            </label>
                         <?php endif;?>
                     <?php endforeach;?>
                    
-                    <img id="btn_cost_of_good_sold" class="create-item" src="<?php echo Yii::app()->getBaseUrl(true)?>/images/addmore.png" alt="Add more" />
+    <img id="btn_cost_of_good_sold" class="create-item" src="<?php echo Yii::app()->getBaseUrl(true)?>/images/addmore.png" alt="Add more" />
                 </div>
                  
                  <?php
-                    $other_imcome = Yii::app()->db->createCommand("select * from tbl_item where `category`='OTHER INCOME'")->queryAll();
+                    $other_imcome = Yii::app()->db->createCommand("select * 
+                                                                   from tbl_item 
+                                                                   where category='OTHER INCOME'
+                                                                   and main_category='(LOSS)/PROFIT FROM OPERATIONS'
+                                                                   ")->queryAll();
                 ?>
                 <div class="item_panel">
                     <h5>OTHER INCOME</h5>
                     
                     <?php foreach ($other_imcome as $item): ?>
                         <?php if($item['isMandatory']== true):?>
-                            <label class="blue"><input checked="true" type="checkbox" name ="<?php echo "item".$item['id'];?>" id="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;<?php echo $item['name'];?></label>  
+                            <label class="blue"><input checked="true" type="checkbox" 
+                                                       name ="<?php echo "item".$item['id'];?>" 
+                                                       id="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;
+                                <?php echo $item['name'];?>
+                            </label>
+                    
                         <?php else:?>
-                            <label><input type="checkbox" name="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;<?php echo $item['name'];?>&nbsp;&nbsp;<img class="del"  id="<?php echo "del_".$item['id'];?>" src="<?php echo Yii::app()->getBaseUrl();?>/images/icon-delete_13.png" /></label>
+                            <label>
+                                <input type="checkbox" 
+                                       name="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;
+                                <?php echo $item['name'];?>&nbsp;&nbsp;
+                                <img class="del"  id="<?php echo "del_".$item['id'];?>" 
+                                     src="<?php echo Yii::app()->getBaseUrl();?>/images/icon-delete_13.png" />
+                            </label>
                         <?php endif;?>
                     <?php endforeach;?>
                    
-                    <img id="btn_other_imcome" class="create-item" src="<?php echo Yii::app()->getBaseUrl(true)?>/images/addmore.png" alt="Add more" />
+        <img id="btn_other_imcome" class="create-item" src="<?php echo Yii::app()->getBaseUrl(true)?>/images/addmore.png" alt="Add more" />
                 </div>
                  <?php
-                    $expenses = Yii::app()->db->createCommand("select * from tbl_item where `category`='EXPENSES'")->queryAll();
+                    $expenses = Yii::app()->db->createCommand("select * 
+                                                               from tbl_item 
+                                                               where category='EXPENSES'
+                                                               and main_category='(LOSS)/PROFIT FROM OPERATIONS'
+                                                               ")->queryAll();
                 ?>
                 <div class="item_panel">
-                    <h5>EXPENSES</h5>
+                    <h5>EXPENSES FOR OPERATIONS</h5>
                     
                     <?php foreach ($expenses as $item): ?>
                         <?php if($item['isMandatory']== true):?>
-                            <label class="blue"><input checked="true" type="checkbox" name ="<?php echo "item".$item['id'];?>" id="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;<?php echo $item['name'];?></label>  
+                            <label class="blue">
+                                <input checked="true" type="checkbox" 
+                                                       name ="<?php echo "item".$item['id'];?>" 
+                                       id="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;
+                                <?php echo $item['name'];?>
+                            </label>  
                         <?php else:?>
-                            <label><input type="checkbox" name="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;<?php echo $item['name'];?>&nbsp;&nbsp;<img class="del"  id="<?php echo "del_".$item['id'];?>" src="<?php echo Yii::app()->getBaseUrl();?>/images/icon-delete_13.png" /></label>
+                    
+                            <label>
+                                <input type="checkbox" 
+                                       name="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;
+                                <?php echo $item['name'];?>&nbsp;&nbsp;
+                                <img class="del"  id="<?php echo "del_".$item['id'];?>" 
+                                     src="<?php echo Yii::app()->getBaseUrl();?>/images/icon-delete_13.png" />
+                            </label>
                         <?php endif;?>
                     <?php endforeach;?>
                    
-                    <img id="btn_expenses" class="create-item" src="<?php echo Yii::app()->getBaseUrl(true)?>/images/addmore.png" alt="Add more" />
+        <img id="btn_expenses" class="create-item" src="<?php echo Yii::app()->getBaseUrl(true)?>/images/addmore.png" alt="Add more" />
+                </div>
+                
+                
+                <?php
+                    $expensesBT = Yii::app()->db->createCommand("select * 
+                                                               from tbl_item 
+                                                               where category='EXPENSES'
+                                                               and main_category='(LOSS)/PROFIT BEFORE TAXATION'
+                                                               ")->queryAll();
+                ?>
+                <div class="item_panel">
+                    <h4>(LOSS)/PROFIT BEFORE TAXATION</h4>
+                    
+                    <h5>EXPENSES BEFORE TAXATION</h5>
+                    
+                    <?php foreach ($expensesBT as $item): ?>
+                        <?php if($item['isMandatory']== true):?>
+                            <label class="blue">
+                                <input checked="true" type="checkbox" 
+                                                       name ="<?php echo "item".$item['id'];?>" 
+                                       id="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;
+                                <?php echo $item['name'];?>
+                            </label>  
+                        <?php else:?>
+                    
+                            <label>
+                                <input type="checkbox" 
+                                       name="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;
+                                <?php echo $item['name'];?>&nbsp;&nbsp;
+                                <img class="del"  id="<?php echo "del_".$item['id'];?>" 
+                                     src="<?php echo Yii::app()->getBaseUrl();?>/images/icon-delete_13.png" />
+                            </label>
+                        <?php endif;?>
+                    <?php endforeach;?>
+                   
+        <img id="btn_expensesBT" class="create-item" src="<?php echo Yii::app()->getBaseUrl(true)?>/images/addmore.png" alt="Add more" />
+                    
+                </div>
+                
+                
+                 <?php
+                    $expensesAT = Yii::app()->db->createCommand("select * 
+                                                               from tbl_item 
+                                                               where category='EXPENSES'
+                                                               and main_category='(LOSS)/PROFIT AFTER TAXATION'
+                                                               ")->queryAll();
+                ?>
+                <div class="item_panel">
+                    <h4>(LOSS)/PROFIT AFTER TAXATION</h4>
+                    
+                    <h5>EXPENSES AFTER TAXATION</h5>
+                    
+                    <?php foreach ($expensesAT as $item): ?>
+                        <?php if($item['isMandatory']== true):?>
+                            <label class="blue">
+                                <input checked="true" type="checkbox" 
+                                                       name ="<?php echo "item".$item['id'];?>" 
+                                       id="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;
+                                <?php echo $item['name'];?>
+                            </label>  
+                        <?php else:?>
+                    
+                            <label>
+                                <input type="checkbox" 
+                                       name="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;
+                                <?php echo $item['name'];?>&nbsp;&nbsp;
+                                <img class="del"  id="<?php echo "del_".$item['id'];?>" 
+                                     src="<?php echo Yii::app()->getBaseUrl();?>/images/icon-delete_13.png" />
+                            </label>
+                        <?php endif;?>
+                    <?php endforeach;?>
+                   
+        <img id="btn_expensesAT" class="create-item" src="<?php echo Yii::app()->getBaseUrl(true)?>/images/addmore.png" alt="Add more" />
+                    
+                </div>
+                
+                
+                <?php
+                    $expensesFY = Yii::app()->db->createCommand("select * 
+                                                               from tbl_item 
+                                                               where category='EXPENSES'
+                                                               and main_category='NET (LOSS)/PROFIT FOR THE FINANCIAL YEAR'
+                                                               ")->queryAll();
+                ?>
+                <div class="item_panel">
+                    <h4>NET (LOSS)/PROFIT FOR THE FINANCIAL YEAR</h4>
+                    
+                    <h5>EXPENSES FOR THE FINANCIAL YEAR</h5>
+                    
+                    <?php foreach ($expensesFY as $item): ?>
+                        <?php if($item['isMandatory']== true):?>
+                            <label class="blue">
+                                <input checked="true" type="checkbox" 
+                                                       name ="<?php echo "item".$item['id'];?>" 
+                                       id="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;
+                                <?php echo $item['name'];?>
+                            </label>  
+                        <?php else:?>
+                    
+                            <label>
+                                <input type="checkbox" 
+                                       name="<?php echo "item".$item['id'];?>" value="<?php echo $item['id'];?>"/>&nbsp;&nbsp;
+                                <?php echo $item['name'];?>&nbsp;&nbsp;
+                                <img class="del"  id="<?php echo "del_".$item['id'];?>" 
+                                     src="<?php echo Yii::app()->getBaseUrl();?>/images/icon-delete_13.png" />
+                            </label>
+                        <?php endif;?>
+                    <?php endforeach;?>
+                   
+        <img id="btn_expensesFY" class="create-item" src="<?php echo Yii::app()->getBaseUrl(true)?>/images/addmore.png" alt="Add more" />
+                    
                 </div>
                
             </td>
             <td valign="top" >
                 <?php
-                    $cash_flow_from_operating = Yii::app()->db->createCommand("select * from tbl_item where `category`='CASH FLOW FROM OPERATING ACTIVITIES'")->queryAll();
+                    $cash_flow_from_operating = Yii::app()->db->createCommand("select * 
+                                                                               from tbl_item 
+                                                                               where category='CASH FLOW FROM OPERATING ACTIVITIES'
+                                                                              ")->queryAll();
                 ?>
                 <div class="item_panel">
                     <h5>CASH FLOW FROM OPERATING <br/>ACTIVITIES</h5>
@@ -811,6 +1091,7 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_general.JPG', "this 
        <button  id="save_continue_button"  class="btn btn-success">SAVE</button>
      <?php $this->endWidget(); ?>
     </div>
+
     <div class="tab-pane" id="tab2">
 
         <div class="form">
