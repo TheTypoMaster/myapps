@@ -389,7 +389,7 @@
   - Indicate in the documentation (or a readme file), that your work
     uses PclZip Library, and make a reference to the author and the web site
     http://www.phpconcept.net
-  - Gives the ability to the final user to update the PclZip libary.
+  - Gives the ability to the final user to update the PclZip library.
 
   I will also appreciate that you send me a mail (vincent@phpconcept.net), just to
   be aware that someone is using PclZip.
