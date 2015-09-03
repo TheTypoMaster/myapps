@@ -76,12 +76,11 @@ echo CHtml::image(Yii::app()->request->baseUrl.'/images/ban_ratio.JPG', "this is
 </br>
 
 <div>
-    
     <?php $form=$this->beginWidget('CActiveForm', array(
 	'action'=>Yii::app()->createUrl($this->route),
 	'method'=>'post',
-        'id' =>'ratios_form'
-            )); ?>
+    'id' =>'ratios_form'
+     )); ?>
                 <?php 
 
                 $compaies = Yii::app()->db->createCommand("select C.company_id, C.company_name 

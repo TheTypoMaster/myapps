@@ -135,8 +135,8 @@ $this->breadcrumbs=array(
     });
     $( "#dialog-form" ).dialog({
       autoOpen: false,
-      height: 300,
-      width: 350,
+      height: 380,
+      width: 500,
       modal: true,
       close: function() {
         allFields.val( "" ).removeClass( "ui-state-error" );
@@ -150,26 +150,33 @@ $this->breadcrumbs=array(
       .button()
       .click(function() {
         var id = $(this).attr('id');
+          
         switch(id)
         {
+                
           case "btn_non_cureent_asset":
               $("#category_item").val("NON CURRENT ASSET");
+              $('#main_category_item').val("");
               break;
                 
           case "btn_cureent_asset":
               $("#category_item").val("CURRENT ASSETS");
+              $('#main_category_item').val("");
                break; 
                 
           case 'btn_cureent_liabilities':
               $('#category_item').val("CURRENT LIABILITIES");
+              $('#main_category_item').val("");
               break;
                 
           case 'btn_no_cureent_liabilities':
               $('#category_item').val("NON-CURRENT LIABILITIES");
+              $('#main_category_item').val("");
               break;
                 
           case 'btn_financed_by_equity':
               $('#category_item').val("FINANCED BY / EQUITY");
+              $('#main_category_item').val("");
                break;
                 
           case 'btn_revenue':
@@ -209,14 +216,17 @@ $this->breadcrumbs=array(
                 
            case 'btn_cash_flow_from_operating':
               $('#category_item').val("CASH FLOW FROM OPERATING ACTIVITIES");
+              $('#main_category_item').val("");
               break; 
                 
            case 'btn_cash_flow_from_investing':
               $('#category_item').val("CASH FLOW FROM INVESTING ACTIVITIES");
+              $('#main_category_item').val("");
               break;
                 
            case 'btn_net_cash_inflow_from_finnancing_activities':
               $('#category_item').val("NET CASH INFLOW FROM FINANCING ACTIVITIES");
+              $('#main_category_item').val("");
               break;             
         }
         $( "#dialog-form" ).dialog( "open" );
@@ -541,11 +551,11 @@ $('.search-form form').submit(function(){
 ");
 ?>
 
-  <div id="dialog-form" title="Create new items">
+<div id="dialog-form" title="Create new items">
 <form id="create-dialog-form">
   <fieldset>
     <label for="name">Select category</label>
-     <select id="category_item" name="category_item">
+     <select id="category_item" name="category_item" style="width: 450px">
            <option value="NON CURRENT ASSET">NON CURRENT ASSET</option>
            <option value="CURRENT ASSETS">CURRENT ASSETS</option>
            <option value="CURRENT LIABILITIES">CURRENT LIABILITIES</option>
@@ -562,7 +572,7 @@ $('.search-form form').submit(function(){
       
       <label for="name">Select Main Category</label>
       <font color="red">**Ignore if unnecessary</font>
-      <select id="main_category_item" name="main_category_item">
+      <select id="main_category_item" name="main_category_item" style="width: 450px">
            <option value=""></option>
            <option value="(LOSS)/PROFIT FROM OPERATIONS">(LOSS)/PROFIT FROM OPERATIONS</option>
            <option value="(LOSS)/PROFIT BEFORE TAXATION">(LOSS)/PROFIT BEFORE TAXATION</option>

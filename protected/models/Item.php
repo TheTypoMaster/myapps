@@ -55,7 +55,7 @@ class Item extends CActiveRecord
 			'id' => 'ID',
 			'name' => 'Name',
 			'category' => 'Category',
-            'main_category' => 'Main Category'
+            'main_category' => 'Main Category',
 			'isMandatory' => 'Is Mandatory',
 		);
 	}

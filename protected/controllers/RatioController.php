@@ -91,12 +91,22 @@ class RatioController extends Controller
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
                
-               $revenue =Yii::app()->db->createCommand("select IV.value, IV.year 
+               $revenue =Yii::app()->db->createCommand("select sum(IV.value) as value, IV.year 
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
                                                         where IV.company_id = '".$company_id."'
-                                                        and I.category = 'REVENUE' 
-                                                        and I.name like '%Revenue%' 
+                                                        and I.category = 'REVENUE'
+                                                        and I.main_category = '(LOSS)/PROFIT FROM OPERATIONS'
+                                                        group by IV.year 
+                                                        order by IV.year")->queryAll();
+               
+               $total_cogs =Yii::app()->db->createCommand("
+                                                        select sum(IV.value) as sum, IV.year 
+                                                        from tbl_item as I 
+                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                        where IV.company_id = '".$company_id."'
+                                                        and I.category = 'COST OF GOOD SOLD'
+                                                        and I.main_category = '(LOSS)/PROFIT FROM OPERATIONS' 
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
                
@@ -105,12 +115,14 @@ class RatioController extends Controller
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
                                                         where IV.company_id = '".$company_id."'
-                                                        and I.category = 'OTHER INCOME' 
+                                                        and I.category = 'OTHER INCOME'
+                                                        and I.main_category = '(LOSS)/PROFIT FROM OPERATIONS'
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
                
                //************************************************************************************************************
-               //PROFIT FROM OPERATION, TOTAL
+               //PROFIT FROM OPERATION, 
+               //TOTAL
                $total_profit_from_operations = Yii::app()->db->createCommand("
                                                         select sum(IV.value) as sum, IV.year
                                                         from tbl_item as I 
@@ -124,7 +136,6 @@ class RatioController extends Controller
                
                //****************************************************************************************************
                //PROFIT BEFORE TAXATION, 
-               
                //TOTAL 
                $total_profit_before_taxation=Yii::app()->db->createCommand("
                                                         select sum(IV.value) as sum, IV.year 
@@ -133,7 +144,8 @@ class RatioController extends Controller
                                                         where IV.company_id = '".$company_id."' 
                                                         and I.main_category = '(LOSS)/PROFIT BEFORE TAXATION' 
                                                         group by IV.year 
-                                                        order by IV.year")->queryAll(); 
+                                                        order by IV.year")->queryAll();
+               
                //EXPENSES
                $finance_cost =Yii::app()->db->createCommand("
                                                         select IV.value, IV.year 
@@ -323,7 +335,7 @@ class RatioController extends Controller
                     if(isset($total_profit_from_operations[$j]['sum']))
                     {
                             $template.= "<td><label>".
-                            number_format($total_profit_from_operations[$j]['sum']
+                            number_format(($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
                                           / ($revenue[$j]['value']
                                           + $total_other_income[$j]['sum']), 2, '.', ',').
                                     "</label></td>";
@@ -345,7 +357,7 @@ class RatioController extends Controller
                     {
                         
                         $template.= "<td><label>".
-                            number_format(($total_profit_from_operations[$j]['sum']
+                            number_format((($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
                                            + $total_profit_before_taxation[$j]['sum']
                                            + $total_profit_after_taxation[$j]['sum'])
                                            / ($revenue[$j]['value']
@@ -368,7 +380,7 @@ class RatioController extends Controller
                     {
                         
                         $template.= "<td><label>".
-                            number_format($total_profit_from_operations[$j]['sum']
+                            number_format(($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
                                           / $revenue[$j]['value'], 2, '.', ',').
                                     "</label></td>";
                     }
@@ -388,7 +400,7 @@ class RatioController extends Controller
                     {
                         
                         $template.= "<td><label>".
-                            number_format(($total_profit_from_operations[$j]['sum']
+                            number_format((($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
                                            + $total_profit_before_taxation[$j]['sum']
                                            + $finance_cost[$j]['value'])
                                            / $revenue[$j]['value'], 2, '.', ',').
@@ -410,7 +422,7 @@ class RatioController extends Controller
                     {
                         
                         $template.= "<td><label>".
-                            number_format(($total_profit_from_operations[$j]['sum']
+                            number_format((($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
                                            + $total_profit_before_taxation[$j]['sum']
                                            + $total_profit_after_taxation[$j]['sum'])
                                            / $share_hoder_fund[$j]['value'], 2, '.', ',').
@@ -431,7 +443,7 @@ class RatioController extends Controller
                     {
                         
                         $template.= "<td><label>".
-                            number_format(($total_profit_from_operations[$j]['sum']
+                            number_format((($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
                                            + $total_profit_before_taxation[$j]['sum']
                                            + $finance_cost[$j]['value'])
                                            / ($total_non_current_assets[$j]['sum'] 
@@ -453,7 +465,7 @@ class RatioController extends Controller
                     {
                         
                         $template.= "<td><label>".
-                            number_format($total_profit_from_operations[$j]['sum']
+                            number_format(($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
                                           / ($total_non_current_liabilities[$j]['sum']
                                           +  $share_hoder_equity[$j]['sum']), 2, '.', ',').
                                     "</label></td>";
@@ -473,7 +485,7 @@ class RatioController extends Controller
                     {
                         
                         $template.= "<td><label>".
-                            number_format(($total_profit_from_operations[$j]['sum']
+                            number_format((($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
                                            + $total_profit_before_taxation[$j]['sum'])
                                            / $share_hoder_equity[$j]['sum'], 2, '.', ',').
                                     "</label></td>";
@@ -577,7 +589,7 @@ class RatioController extends Controller
                     {
                         
                         $template.= "<td><label>".
-                            number_format($total_profit_from_operations[$j]['sum']
+                            number_format(($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
                                           / $finance_cost[$j]['value'], 0, '.', ',').
                                     "</label></td>";
                     }

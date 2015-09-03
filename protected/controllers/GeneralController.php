@@ -397,14 +397,16 @@ class GeneralController extends Controller
                                         from tbl_item as I 
                                         inner join tbl_item_value as IV on I.id = IV.item_id 
                                         where IV.company_id = '".$company_id."' 
-                                        and I.category = 'REVENUE' 
+                                        and I.category = 'REVENUE'
+                                        and I.main_category = '(LOSS)/PROFIT FROM OPERATIONS'
                                         order by I.id, IV.year ")->queryAll():Yii::app()->db->createCommand("
                                         select I.name,IV.value,IV.year,I.category 
                                         from tbl_item as I 
                                         inner join tbl_item_value as IV on I.id = IV.item_id 
                                         where IV.company_id = '".$company_id."' 
                                         and IV.year='".$year."' 
-                                        and I.category = 'REVENUE' 
+                                        and I.category = 'REVENUE'
+                                        and I.main_category = '(LOSS)/PROFIT FROM OPERATIONS'
                                         order by I.id")->queryAll();
                  
                 if(!empty($revenue))
@@ -467,14 +469,17 @@ class GeneralController extends Controller
                                 from tbl_item as I 
                                 inner join tbl_item_value as IV on I.id = IV.item_id 
                                 where IV.company_id = '".$company_id."' 
-                                and I.category = 'COST OF GOOD SOLD' 
+                                and I.category = 'COST OF GOOD SOLD'
+                                and I.main_category = '(LOSS)/PROFIT FROM OPERATIONS'
                                 order by I.id, IV.year ")->queryAll():Yii::app()->db->createCommand("
                                 select I.name,IV.value,IV.year,I.category 
                                 from tbl_item as I 
                                 inner join tbl_item_value as IV on I.id = IV.item_id 
                                 where IV.company_id = '".$company_id."' 
                                 and IV.year='".$year."' 
-                                and I.category = 'COST OF GOOD SOLD' order by I.id")->queryAll();
+                                and I.category = 'COST OF GOOD SOLD'
+                                and I.main_category = '(LOSS)/PROFIT FROM OPERATIONS'
+                                order by I.id")->queryAll();
                
                 $cost_of_good_sold_statitis = array();
                
@@ -556,14 +561,16 @@ class GeneralController extends Controller
                             from tbl_item as I 
                             inner join tbl_item_value as IV on I.id = IV.item_id 
                             where IV.company_id = '".$company_id."' 
-                            and I.category = 'OTHER INCOME' 
+                            and I.category = 'OTHER INCOME'
+                            and I.main_category = '(LOSS)/PROFIT FROM OPERATIONS'
                             order by I.id, IV.year ")->queryAll():Yii::app()->db->createCommand("
                             select I.name,IV.value,IV.year,I.category 
                             from tbl_item as I 
                             inner join tbl_item_value as IV on I.id = IV.item_id 
                             where IV.company_id = '".$company_id."' 
                             and IV.year='".$year."' 
-                            and I.category = 'OTHER INCOME' 
+                            and I.category = 'OTHER INCOME'
+                            and I.main_category = '(LOSS)/PROFIT FROM OPERATIONS'
                             order by I.id")->queryAll();
 
                  if(!empty($other_income))

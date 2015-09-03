@@ -112,12 +112,22 @@ class ReportController extends Controller
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
                
-               $revenue =Yii::app()->db->createCommand("select IV.value, IV.year 
+               $revenue =Yii::app()->db->createCommand("select sum(IV.value) as value, IV.year 
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
                                                         where IV.company_id = '".$company_id."'
-                                                        and I.category = 'REVENUE' 
-                                                        and I.name like '%Revenue%' 
+                                                        and I.category = 'REVENUE'
+                                                        and I.main_category = '(LOSS)/PROFIT FROM OPERATIONS'
+                                                        group by IV.year 
+                                                        order by IV.year")->queryAll();
+                
+               $total_cogs =Yii::app()->db->createCommand("
+                                                        select sum(IV.value) as sum, IV.year 
+                                                        from tbl_item as I 
+                                                        inner join tbl_item_value as IV on I.id = IV.item_id 
+                                                        where IV.company_id = '".$company_id."'
+                                                        and I.category = 'COST OF GOOD SOLD'
+                                                        and I.main_category = '(LOSS)/PROFIT FROM OPERATIONS' 
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
                
@@ -126,7 +136,8 @@ class ReportController extends Controller
                                                         from tbl_item as I 
                                                         inner join tbl_item_value as IV on I.id = IV.item_id 
                                                         where IV.company_id = '".$company_id."'
-                                                        and I.category = 'OTHER INCOME' 
+                                                        and I.category = 'OTHER INCOME'
+                                                        and I.main_category = '(LOSS)/PROFIT FROM OPERATIONS'
                                                         group by IV.year 
                                                         order by IV.year")->queryAll();
                
@@ -250,10 +261,10 @@ class ReportController extends Controller
                    
                    if(isset($total_profit_from_operations[$j]['sum']))
                    {
-                       $financial_year[$j] = $total_profit_from_operations[$j]['sum'] 
-                                             + $total_profit_before_taxation[$j]['sum']
-                                             + $total_profit_after_taxation[$j]['sum']
-                                             + $total_profit_financial_year[$j]['sum'];
+                       $financial_year[$j] = ($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
+                                              + $total_profit_before_taxation[$j]['sum']
+                                              + $total_profit_after_taxation[$j]['sum']
+                                              + $total_profit_financial_year[$j]['sum'];
                    }
                    else
                    {
@@ -316,9 +327,9 @@ class ReportController extends Controller
                     if(isset($total_profit_from_operations[$j]['sum']))
                     
                         
-                        $interes_coverages[$j]=($total_profit_from_operations[$j]['sum']
-                                           + $total_profit_before_taxation[$j]['sum'])
-                                           / $finance_cost[$j]['value'];
+                        $interes_coverages[$j]=(($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
+                                                 + $total_profit_before_taxation[$j]['sum'])
+                                                 / $finance_cost[$j]['value'];
                        
                     else
                        
@@ -326,20 +337,20 @@ class ReportController extends Controller
                     
                     if(isset($total_profit_from_operations[$j]['sum']))
                         
-                        $gross_profit_margins[$j]=$total_profit_from_operations[$j]['sum']
-                                                  / ($revenue[$j]['value']
-                                                  + $total_other_income[$j]['sum']);
+                        $gross_profit_margins[$j]=($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
+                                                   / ($revenue[$j]['value']
+                                                   + $total_other_income[$j]['sum']);
                     else
                        
                         $gross_profit_margins[$j]=0;
                     
                     if(isset($total_profit_from_operations[$j]['sum']))
                         
-                        $net_profit_margins[$j]=($total_profit_from_operations[$j]['sum']
-                                               + $total_profit_before_taxation[$j]['sum']
-                                               + $total_profit_after_taxation[$j]['sum'])
-                                               / ($revenue[$j]['value']
-                                               + $total_other_income[$j]['sum']);
+                        $net_profit_margins[$j]=(($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
+                                                  + $total_profit_before_taxation[$j]['sum']
+                                                  + $total_profit_after_taxation[$j]['sum'])
+                                                  / ($revenue[$j]['value']
+                                                  + $total_other_income[$j]['sum']);
                    
                     else
                         
@@ -347,8 +358,8 @@ class ReportController extends Controller
                     
                     if(isset($total_profit_from_operations[$j]['sum']))
                         
-                        $gross_operating_margins[$j]=$total_profit_from_operations[$j]['sum']
-                                                    / $revenue[$j]['value'];
+                        $gross_operating_margins[$j]=($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
+                                                      / $revenue[$j]['value'];
                    
                     else
                         
@@ -356,7 +367,7 @@ class ReportController extends Controller
                     
                     if(isset($total_profit_from_operations[$j]['sum']))
                         
-                        $net_operating_margins[$j]=($total_profit_from_operations[$j]['sum']
+                        $net_operating_margins[$j]=(($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
                                                    + $total_profit_before_taxation[$j]['sum']
                                                    + $finance_cost[$j]['value'])
                                                    / $revenue[$j]['value'];
@@ -367,7 +378,7 @@ class ReportController extends Controller
                     
                    if(isset($total_profit_from_operations[$j]['sum']))
                         
-                        $return_on_equities[$j]=($total_profit_from_operations[$j]['sum']
+                        $return_on_equities[$j]=(($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
                                                + $total_profit_before_taxation[$j]['sum']
                                                + $total_profit_after_taxation[$j]['sum'])
                                                / $share_hoder_fund[$j]['value'];
@@ -378,7 +389,7 @@ class ReportController extends Controller
                     
                     if(isset($total_profit_from_operations[$j]['sum']))
                         
-                       $return_on_assets[$j]=($total_profit_from_operations[$j]['sum']
+                       $return_on_assets[$j]=(($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
                                                + $total_profit_before_taxation[$j]['sum']
                                                + $finance_cost[$j]['value'])
                                                / ($total_non_current_assets[$j]['sum'] 
@@ -389,7 +400,7 @@ class ReportController extends Controller
                      
                      if(isset($total_profit_from_operations[$j]['sum']))
                          
-                        $return_on_capital_employeds[$j]=$total_profit_from_operations[$j]['sum']
+                        $return_on_capital_employeds[$j]=($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
                                                           / ($total_non_current_liabilities[$j]['sum']
                                                           +  $share_hoder_equity[$j]['sum']); 
                    
@@ -400,9 +411,9 @@ class ReportController extends Controller
                      
                     if(isset($total_profit_from_operations[$j]['sum']))
                         
-                        $earning_per_shares[$j]=($total_profit_from_operations[$j]['sum']
-                                               + $total_profit_before_taxation[$j]['sum'])
-                                               / $share_hoder_equity[$j]['sum'];
+                        $earning_per_shares[$j]=(($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
+                                                   + $total_profit_before_taxation[$j]['sum'])
+                                                   / $share_hoder_equity[$j]['sum'];
                     else     
                         $earning_per_shares[$j]=0;
                    
@@ -410,8 +421,8 @@ class ReportController extends Controller
                     if(isset($revenue[$j]['value']))
                         
                         $total_asset_tunovers[$j]=$revenue[$j]['value']
-                                          / ($total_non_current_assets[$j]['sum'] 
-                                          +  $total_current_assets[$j]['sum']);
+                                                  / ($total_non_current_assets[$j]['sum'] 
+                                                  +  $total_current_assets[$j]['sum']);
                    
                     else
                         
@@ -421,7 +432,7 @@ class ReportController extends Controller
                     if(isset($revenue[$j]['value']))
                         
                         $fix_asset_tunovers[$j]=$revenue[$j]['value']
-                                               / $total_non_current_assets[$j]['sum'];     
+                                                / $total_non_current_assets[$j]['sum'];     
                     else
                         $fix_asset_tunovers[$j]=0;
                    
@@ -429,8 +440,8 @@ class ReportController extends Controller
                     if(isset($total_current_liabilities[$j]['sum']) && isset($total_non_current_liabilities[$j]['sum']))
                         
                         $gering_ratio_debt_equitys[$j]=($total_current_liabilities[$j]['sum'] 
-                                          + $total_non_current_liabilities[$j]['sum'])
-                                          / $share_hoder_equity[$j]['sum'];
+                                                        + $total_non_current_liabilities[$j]['sum'])
+                                                        / $share_hoder_equity[$j]['sum'];
                 
                     else
                         $gering_ratio_debt_equitys[$j]=0;
@@ -439,10 +450,10 @@ class ReportController extends Controller
                    if(isset($total_current_liabilities[$j]['sum']) && isset($total_non_current_liabilities[$j]['sum']))
                         
                         $gering_ratio_total_finances[$j]=($total_current_liabilities[$j]['sum'] 
-                                          + $total_non_current_liabilities[$j]['sum'])
-                                          / (($total_current_liabilities[$j]['sum'] 
-                                          + $total_non_current_liabilities[$j]['sum'])
-                                          + $share_hoder_equity[$j]['sum']);
+                                                          + $total_non_current_liabilities[$j]['sum'])
+                                                          / (($total_current_liabilities[$j]['sum'] 
+                                                          + $total_non_current_liabilities[$j]['sum'])
+                                                          + $share_hoder_equity[$j]['sum']);
                 
                     else
                         $gering_ratio_total_finances[$j]=0;
@@ -450,8 +461,8 @@ class ReportController extends Controller
                     
                      if(isset($total_profit_from_operations[$j]['sum']))
                         
-                        $interes_covers[$j] = $total_profit_from_operations[$j]['sum']
-                                          / $finance_cost[$j]['value'];
+                        $interes_covers[$j] = ($total_profit_from_operations[$j]['sum'] - $total_cogs[$j]['sum'])
+                                               / $finance_cost[$j]['value'];
                     else
                         $interes_covers[$j] =0;
                     

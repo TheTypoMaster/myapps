@@ -80,6 +80,11 @@ return array(
         'yiiwheels' => array(
             'class' => 'yiiwheels.YiiWheels',   
         ),
+        
+        //Excel View
+        'excel'=>array(
+        'class'=>'application.extensions.PHPExcel',
+        ),
 	
 /*	'bootstrap'=>array(
             'class'=>'bootstrap.components.Bootstrap',
